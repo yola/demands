@@ -1,5 +1,6 @@
 import logging
 import requests
+import time
 
 
 log = logging.getLogger(__name__)
@@ -37,9 +38,12 @@ class Request(object):
     def send(self):
         """Execute the request, and return the response"""
         method = self.method.lower()
-        log.debug('HTTP [%s] call to "%s"', self.method, self.url)
+        start_time = time.time()
+        response = getattr(requests, method)(self.url, **self.requests_args)
+        log.debug('%s HTTP [%s] call to "%s" %.2fms', response.status_code, self.method, self.url,
+                  (time.time() - start_time) * 1000)
         log.debug('HTTP request data: %s', self.requests_args)
-        return getattr(requests, method)(self.url, **self.requests_args)
+        return response
 
 
 class HTTPServiceError(Exception):
