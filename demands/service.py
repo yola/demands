@@ -7,7 +7,8 @@ log = logging.getLogger(__name__)
 
 
 class Request(object):
-    """Request object which provides functionality to send and receive
+    """
+    Request object which provides functionality to send and receive
     http requests/responses.
     """
 
@@ -29,9 +30,7 @@ class Request(object):
             self.requests_args['verify'] = verify
 
     def authenticate(self, username, password):
-        """Enable http authentication with the provided username and
-        password
-        """
+        """Enable http authentication with the provided username and password"""
         log.debug('Authentication via HTTP auth as "%s"', username)
         self.requests_args['auth'] = (username, password)
 
@@ -55,23 +54,24 @@ class HTTPServiceError(Exception):
 
 
 class HTTPService(object):
-    """Provides an interface which allows arbitrary methods to be defined and
+    """
+    Provides an interface which allows arbitrary methods to be defined and
     called on a remote http service.
     """
     def __init__(self, config):
         self.config = config
 
     def pre_send(self, request, **params):
-        """Override to modify request object to be called just before sending
-        the request"""
+        """
+        Override to modify request object to be called just before sending
+        the request
+        """
         if self.config.get('username'):
             request.authenticate(
                 self.config['username'], self.config['password'])
 
     def post_send(self, request, response, **params):
-        """Override to modify response object returned by call made by request
-        object.
-        """
+        """Override to modify response object returned by call made by request object."""
         response.is_ok = response.status_code < 300
         if (not response.is_ok and
                 not response.status_code in params.get('expected_response_codes', [])):
@@ -93,7 +93,8 @@ class HTTPService(object):
         return self._make_call('DELETE', path, data, cookies, headers, **kwargs)
 
     def _make_call(self, method, path, data, headers, cookies, **kwargs):
-        """Call the service method defined by the passed path and http method.
+        """
+        Call the service method defined by the passed path and http method.
         Additional arguments include cookies, headers, and data values.
         """
         base = self.config.get('url')
