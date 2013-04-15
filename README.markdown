@@ -1,7 +1,7 @@
 # demands
 
 Base class for building service clients on top of `requests` lib.  By default it
-"demands" successful response from API endpoints, otherwise it raises exception.
+"demands" successful response from API endpoints, otherwise it raises an exception.
 
 Written and used by the folks at Yola. Check out our [free website][1] builder today.
 
