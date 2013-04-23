@@ -26,31 +26,32 @@ class RequestTests(PatchedRequestsTests):
 
     def test_request_properly_authenticates(self):
         username, password = 'stevemcqueen', 'password'
-        request = Request(self.url, 'POST', None, None, None, False)
+        url = 'https://localhost/'
+        request = Request(url, 'POST', None, None, None, True)
         request.authenticate(username, password)
         request.send()
         self.requests.post.assert_called_once_with(
-            self.url, headers=None, cookies=None, data=None, auth=(username, password))
+            url, headers={}, cookies={}, data={}, auth=(username, password), verify=True)
 
     def test_request_sends_proper_arguments_for_headers_cookies_and_data(self):
         # Simple request
         request = Request(self.url, 'POST', None, None, None, False)
         request.send()
-        self.requests.post.assert_called_with(self.url, headers=None, cookies=None, data=None)
+        self.requests.post.assert_called_with(self.url, headers={}, cookies={}, data={}, auth=None)
 
         # Request with headers
         headers = {'Content-Type': 'text/html'}
         request = Request(self.url, 'GET', None, headers, None, False)
         request.send()
         self.requests.get.assert_called_with(
-            self.url, headers=headers, cookies=None, params=None)
+            self.url, headers=headers, cookies={}, params={}, auth=None)
 
         # Request with data and cookies
         data = {'robots': 1}
         cookies = {'cookie_name': 'cookie_value'}
         request = Request(self.url, 'POST', data, None, cookies, False)
         request.send()
-        self.requests.post.assert_called_with(self.url, data=data, headers=None, cookies=cookies)
+        self.requests.post.assert_called_with(self.url, data=data, headers={}, cookies=cookies, auth=None)
 
 
 class HttpServiceTests(unittest2.TestCase):
@@ -58,7 +59,7 @@ class HttpServiceTests(unittest2.TestCase):
         self.service = HTTPService({
             'url': 'http://service.com/'
         })
-        self.request = Mock()
+        self.request = Request('http://service.com/', 'GET', None, None, None, False)
         self.response = Mock(headers={'content-type': 'text/plan'})
 
     def test_pre_send_triggers_authentication_when_username_provided(self):
@@ -68,7 +69,15 @@ class HttpServiceTests(unittest2.TestCase):
             'password': 'bar'
         })
         service.pre_send(self.request)
-        self.request.auth = ('foo', 'bar')
+        self.assertEqual(self.request.auth, ('foo', 'bar'))
+
+    def test_pre_send_can_trigger_client_identification(self):
+        service = HTTPService({
+            'url': 'http://localhost/',
+            'client_identification': ('my_client', '1.2.3', 'my_app')
+        })
+        service.pre_send(self.request)
+        self.assertEqual(self.request.headers['User-Agent'], 'my_client 1.2.3 - my_app')
 
     def test_post_send_raises_exception_in_case_of_error(self):
         self.response.configure_mock(status_code=500, content='content')

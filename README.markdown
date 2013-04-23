@@ -1,4 +1,4 @@
-# demands
+# Base HTTP service client
 
 Base class for building service clients on top of `requests` lib.  By default it
 "demands" successful response from API endpoints, otherwise it raises an exception.
