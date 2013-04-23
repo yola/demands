@@ -74,7 +74,9 @@ class HttpServiceTests(unittest2.TestCase):
     def test_pre_send_can_trigger_client_identification(self):
         service = HTTPService({
             'url': 'http://localhost/',
-            'client_identification': ('my_client', '1.2.3', 'my_app')
+            'client_name': 'my_client',
+            'client_version': '1.2.3',
+            'app_name': 'my_app'
         })
         service.pre_send(self.request)
         self.assertEqual(self.request.headers['User-Agent'], 'my_client 1.2.3 - my_app')

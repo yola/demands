@@ -79,9 +79,12 @@ class HTTPService(object):
             request.authenticate(
                 self.config['username'], self.config['password'])
 
-        if 'client_identification' in self.config:
-            client_name, client_version, app_name = self.config['client_identification']
-            request.headers['User-Agent'] = '%s %s - %s' % (client_name, client_version, app_name)
+        if 'client_name' in self.config:
+            request.headers['User-Agent'] = '%s %s - %s' % (
+                self.config['client_name'],
+                self.config.get('client_version', 'x.y.z'),
+                self.config.get('app_name', 'unknown'),
+            )
 
     def post_send(self, request, response, **params):
         """Override to modify response object returned by call made by request object."""
