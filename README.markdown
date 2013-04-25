@@ -1,7 +1,9 @@
-# Base HTTP service client
+# demands
 
-Base class for building service clients on top of `requests` lib.  By default it
-"demands" successful response from API endpoints, otherwise it raises an exception.
+demands is a base HTTP service client class on top of [requests][2]
+
+By default it "demands" successful response from API endpoints,
+otherwise it raises an exception.
 
 Written and used by the folks at Yola to support our [free website builder][1].
 
@@ -36,3 +38,4 @@ Run the tests with:
     nosetests
 
 [1]:https://www.yola.com/
+[2]:https://github.com/kennethreitz/requests
