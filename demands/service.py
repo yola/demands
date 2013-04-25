@@ -15,33 +15,42 @@ class Request(object):
     def __init__(self, url, method, data, headers, cookies, verify):
         self.url = url
         self.method = method
+        self.data = data or {}
+        self.cookies = cookies or {}
+        self.headers = headers or {}
+        self.verify = verify
+        self.auth = None
 
-        self.requests_args = {}
-
-        if method in ('POST', 'PUT', 'PATCH'):
-            self.requests_args['data'] = data
+    def _compose_request_arguments(self):
+        arguments = {}
+        if self.method in ('POST', 'PUT', 'PATCH'):
+            arguments['data'] = self.data
         else:
-            self.requests_args['params'] = data
+            arguments['params'] = self.data
 
-        self.requests_args['cookies'] = cookies
-        self.requests_args['headers'] = headers
+        arguments['cookies'] = self.cookies
+        arguments['headers'] = self.headers
+        arguments['auth'] = self.auth
 
         if self.url.startswith('https'):
-            self.requests_args['verify'] = verify
+            arguments['verify'] = self.verify
+
+        return arguments
 
     def authenticate(self, username, password):
         """Enable http authentication with the provided username and password"""
         log.debug('Authentication via HTTP auth as "%s"', username)
-        self.requests_args['auth'] = (username, password)
+        self.auth = (username, password)
 
     def send(self):
         """Execute the request, and return the response"""
         method = self.method.lower()
+        request_arguments = self._compose_request_arguments()
         start_time = time.time()
-        response = getattr(requests, method)(self.url, **self.requests_args)
+        response = getattr(requests, method)(self.url, **request_arguments)
         log.debug('%s HTTP [%s] call to "%s" %.2fms', response.status_code, self.method, self.url,
                   (time.time() - start_time) * 1000)
-        log.debug('HTTP request data: %s', self.requests_args)
+        log.debug('HTTP request data: %s', request_arguments)
         return response
 
 
@@ -66,9 +75,16 @@ class HTTPService(object):
         Override to modify request object to be called just before sending
         the request
         """
-        if self.config.get('username'):
+        if 'username' in self.config:
             request.authenticate(
                 self.config['username'], self.config['password'])
+
+        if 'client_name' in self.config:
+            request.headers['User-Agent'] = '%s %s - %s' % (
+                self.config['client_name'],
+                self.config.get('client_version', 'x.y.z'),
+                self.config.get('app_name', 'unknown'),
+            )
 
     def post_send(self, request, response, **params):
         """Override to modify response object returned by call made by request object."""
