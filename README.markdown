@@ -2,7 +2,7 @@
 
 demands is a base HTTP service client class on top of [requests][2].
 
-By default it "demands" successful response from API endpoints,
+By default it "demands" successful responses from API endpoints,
 otherwise it raises an exception.
 
 Written and used by the folks at Yola to support our [free website builder][1].
