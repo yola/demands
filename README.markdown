@@ -1,6 +1,6 @@
 # demands
 
-demands is a base HTTP service client class on top of [requests][2]
+demands is a base HTTP service client class on top of [requests][2].
 
 By default it "demands" successful response from API endpoints,
 otherwise it raises an exception.
