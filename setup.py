@@ -2,11 +2,11 @@ from setuptools import setup
 
 setup(
     name='demands',
-    version='0.1.0',
+    version='0.2.0',
     description='Base HTTP service client',
     author='Yola',
     author_email='engineers@yola.com',
     url='https://github.com/yola/demands',
     packages=['demands'],
-    install_requires=['requests < 1.0.0']
+    install_requires=['requests >= 1.0.0, < 2.0.0']
 )
