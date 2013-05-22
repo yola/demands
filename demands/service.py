@@ -1,9 +1,11 @@
 import logging
+import os
 import requests
 import time
 
 
 log = logging.getLogger(__name__)
+SYSTEM_CA_BUNDLE = '/etc/ssl/certs/ca-certificates.crt'
 
 
 class Request(object):
@@ -34,6 +36,9 @@ class Request(object):
 
         if self.url.startswith('https'):
             arguments['verify'] = self.verify
+            if (arguments['verify'] is True
+                    and os.path.isfile(SYSTEM_CA_BUNDLE)):
+                arguments['verify'] = SYSTEM_CA_BUNDLE
 
         return arguments
 

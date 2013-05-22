@@ -1,9 +1,11 @@
+import os
 import unittest2
 
 import requests
 from mock import Mock, patch
 
-from demands.service import Request, HTTPService, HTTPServiceError
+from demands.service import (Request, HTTPService, HTTPServiceError,
+                             SYSTEM_CA_BUNDLE)
 
 
 class PatchedRequestsTests(unittest2.TestCase):
@@ -30,8 +32,13 @@ class RequestTests(PatchedRequestsTests):
         request = Request(url, 'POST', None, None, None, True)
         request.authenticate(username, password)
         request.send()
+        if os.path.isfile(SYSTEM_CA_BUNDLE):
+            verify = SYSTEM_CA_BUNDLE
+        else:
+            verify = True
         self.requests.post.assert_called_once_with(
-            url, headers={}, cookies={}, data={}, auth=(username, password), verify=True)
+            url, headers={}, cookies={}, data={}, auth=(username, password),
+            verify=verify)
 
     def test_request_sends_proper_arguments_for_headers_cookies_and_data(self):
         # Simple request
