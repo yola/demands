@@ -1,11 +1,9 @@
-import os
 import unittest2
 
 import requests
 from mock import Mock, patch
 
-from demands.service import (Request, HTTPService, HTTPServiceError,
-                             SYSTEM_CA_BUNDLE)
+from demands.service import Request, HTTPService, HTTPServiceError
 
 
 class PatchedRequestsTests(unittest2.TestCase):
@@ -23,6 +21,12 @@ class PatchedRequestsTests(unittest2.TestCase):
         self.requests_patcher.stop()
 
 
+class Trueish(object):
+    """Class to compare things to, to see if they are Trueish"""
+    def __eq__(self, other):
+        return bool(other)
+
+
 class RequestTests(PatchedRequestsTests):
     url = 'http://localhost/'
 
@@ -32,13 +36,9 @@ class RequestTests(PatchedRequestsTests):
         request = Request(url, 'POST', None, None, None, True)
         request.authenticate(username, password)
         request.send()
-        if os.path.isfile(SYSTEM_CA_BUNDLE):
-            verify = SYSTEM_CA_BUNDLE
-        else:
-            verify = True
         self.requests.post.assert_called_once_with(
             url, headers={}, cookies={}, data={}, auth=(username, password),
-            verify=verify)
+            verify=Trueish())
 
     def test_request_sends_proper_arguments_for_headers_cookies_and_data(self):
         # Simple request
