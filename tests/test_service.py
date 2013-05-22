@@ -21,6 +21,12 @@ class PatchedRequestsTests(unittest2.TestCase):
         self.requests_patcher.stop()
 
 
+class Trueish(object):
+    """Class to compare things to, to see if they are Trueish"""
+    def __eq__(self, other):
+        return bool(other)
+
+
 class RequestTests(PatchedRequestsTests):
     url = 'http://localhost/'
 
@@ -31,7 +37,8 @@ class RequestTests(PatchedRequestsTests):
         request.authenticate(username, password)
         request.send()
         self.requests.post.assert_called_once_with(
-            url, headers={}, cookies={}, data={}, auth=(username, password), verify=True)
+            url, headers={}, cookies={}, data={}, auth=(username, password),
+            verify=Trueish())
 
     def test_request_sends_proper_arguments_for_headers_cookies_and_data(self):
         # Simple request
