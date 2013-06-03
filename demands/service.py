@@ -12,22 +12,31 @@ class Request(object):
     http requests/responses.
     """
 
-    def __init__(self, url, method, data, headers, cookies, verify):
+    def __init__(self, url, method, data, body, headers, cookies, verify):
         self.url = url
         self.method = method
         self.data = data or {}
+        self.body = body or {}
         self.cookies = cookies or {}
         self.headers = headers or {}
         self.verify = verify
         self.auth = None
 
     def _compose_request_arguments(self):
-        arguments = {}
-        if self.method in ('POST', 'PUT', 'PATCH'):
-            arguments['data'] = self.data
-        else:
-            arguments['params'] = self.data
+        """Compose arguments as expected by the requests library.
 
+        Some of the variables are munged (requests vs demands):
+
+        data / self.body - The body to attach the request. If a dictionary
+                is provided, form-encoding will take place (also used
+                for file uploads)
+        params / self.data - Dictionary of URL parameters to
+                append to the URL
+
+        """
+        arguments = {}
+        arguments['params'] = self.data
+        arguments['data'] = self.body
         arguments['cookies'] = self.cookies
         arguments['headers'] = self.headers
         arguments['auth'] = self.auth
@@ -96,27 +105,27 @@ class HTTPService(object):
 
             raise HTTPServiceError(response.status_code, response.content)
 
-    def get(self, path, data=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('GET', path, data, cookies, headers, **kwargs)
+    def get(self, path, data=None, body=None, cookies=None, headers=None, **kwargs):
+        return self._make_call('GET', path, data, body, cookies, headers, **kwargs)
 
-    def post(self, path, data=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('POST', path, data, cookies, headers, **kwargs)
+    def post(self, path, data=None, body=None, cookies=None, headers=None, **kwargs):
+        return self._make_call('POST', path, data, body, cookies, headers, **kwargs)
 
-    def put(self, path, data=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('PUT', path, data, cookies, headers, **kwargs)
+    def put(self, path, data=None, body=None, cookies=None, headers=None, **kwargs):
+        return self._make_call('PUT', path, data, body, cookies, headers, **kwargs)
 
-    def delete(self, path, data=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('DELETE', path, data, cookies, headers, **kwargs)
+    def delete(self, path, data=None, body=None, cookies=None, headers=None, **kwargs):
+        return self._make_call('DELETE', path, data, body, cookies, headers, **kwargs)
 
-    def _make_call(self, method, path, data, headers, cookies, **kwargs):
+    def _make_call(self, method, path, data, body, headers, cookies, **kwargs):
         """
         Call the service method defined by the passed path and http method.
-        Additional arguments include cookies, headers, and data values.
+        Additional arguments include cookies, headers, body, and data values.
         """
         base = self.config.get('url')
         url = '/'.join([base.rstrip('/'), path.lstrip('/')])
 
-        request = Request(url, method, data, headers, cookies, self.config.get('verify_ssl', True))
+        request = Request(url, method, data, body, headers, cookies, self.config.get('verify_ssl', True))
 
         self.pre_send(request, **kwargs)
         response = request.send()
