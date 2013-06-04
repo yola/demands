@@ -27,31 +27,31 @@ class RequestTests(PatchedRequestsTests):
     def test_request_properly_authenticates(self):
         username, password = 'stevemcqueen', 'password'
         url = 'https://localhost/'
-        request = Request(url, 'POST', None, None, None, True)
+        request = Request(url, 'POST', verify=True)
         request.authenticate(username, password)
         request.send()
         self.requests.post.assert_called_once_with(
-            url, headers={}, cookies={}, data={}, auth=(username, password), verify=True)
+            url, headers={}, cookies={}, params={}, data={}, auth=(username, password), verify=True)
 
-    def test_request_sends_proper_arguments_for_headers_cookies_and_data(self):
+    def test_request_sends_proper_arguments_for_headers_cookies_and_params(self):
         # Simple request
-        request = Request(self.url, 'POST', None, None, None, False)
+        request = Request(self.url, 'POST')
         request.send()
-        self.requests.post.assert_called_with(self.url, headers={}, cookies={}, data={}, auth=None)
+        self.requests.post.assert_called_with(self.url, headers={}, cookies={}, params={}, data={}, auth=None)
 
         # Request with headers
         headers = {'Content-Type': 'text/html'}
-        request = Request(self.url, 'GET', None, headers, None, False)
+        request = Request(self.url, 'GET', headers=headers)
         request.send()
         self.requests.get.assert_called_with(
-            self.url, headers=headers, cookies={}, params={}, auth=None)
+            self.url, params={}, data={}, headers=headers, cookies={}, auth=None)
 
-        # Request with data and cookies
-        data = {'robots': 1}
+        # Request with params and cookies
+        params = {'robots': 1}
         cookies = {'cookie_name': 'cookie_value'}
-        request = Request(self.url, 'POST', data, None, cookies, False)
+        request = Request(self.url, 'POST', params=params, cookies=cookies)
         request.send()
-        self.requests.post.assert_called_with(self.url, data=data, headers={}, cookies=cookies, auth=None)
+        self.requests.post.assert_called_with(self.url, params=params, data={}, cookies=cookies, auth=None, headers={})
 
 
 class HttpServiceTests(unittest2.TestCase):
@@ -59,7 +59,7 @@ class HttpServiceTests(unittest2.TestCase):
         self.service = HTTPService({
             'url': 'http://service.com/'
         })
-        self.request = Request('http://service.com/', 'GET', None, None, None, False)
+        self.request = Request('http://service.com/', 'GET')
         self.response = Mock(headers={'content-type': 'text/plan'})
 
     def test_pre_send_triggers_authentication_when_username_provided(self):

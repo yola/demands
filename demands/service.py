@@ -7,36 +7,24 @@ log = logging.getLogger(__name__)
 
 
 class Request(object):
-    """
-    Request object which provides functionality to send and receive
-    http requests/responses.
-    """
-
-    def __init__(self, url, method, data, body, headers, cookies, verify):
-        self.url = url
-        self.method = method
-        self.data = data or {}
-        self.body = body or {}
+    """Request object for http requests/responses."""
+    
+    def __init__(self, url, method, cookies=None, data=None, headers=None,
+                 params=None, verify=False):
+        self.url = url or {}
+        self.method = method or {}
         self.cookies = cookies or {}
+        self.data = data or {}
         self.headers = headers or {}
+        self.params = params or {}
         self.verify = verify
         self.auth = None
 
     def _compose_request_arguments(self):
-        """Compose arguments as expected by the requests library.
-
-        Some of the variables are munged (requests vs demands):
-
-        data / self.body - The body to attach the request. If a dictionary
-                is provided, form-encoding will take place (also used
-                for file uploads)
-        params / self.data - Dictionary of URL parameters to
-                append to the URL
-
-        """
+        """Compose arguments as expected by the requests library."""
         arguments = {}
-        arguments['params'] = self.data
-        arguments['data'] = self.body
+        arguments['params'] = self.params
+        arguments['data'] = self.data
         arguments['cookies'] = self.cookies
         arguments['headers'] = self.headers
         arguments['auth'] = self.auth
@@ -59,7 +47,7 @@ class Request(object):
         response = getattr(requests, method)(self.url, **request_arguments)
         log.debug('%s HTTP [%s] call to "%s" %.2fms', response.status_code, self.method, self.url,
                   (time.time() - start_time) * 1000)
-        log.debug('HTTP request data: %s', request_arguments)
+        log.debug('HTTP request args: %s', request_arguments)
         return response
 
 
@@ -105,27 +93,28 @@ class HTTPService(object):
 
             raise HTTPServiceError(response.status_code, response.content)
 
-    def get(self, path, data=None, body=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('GET', path, data, body, cookies, headers, **kwargs)
+    def get(self, path, **kwargs):
+        return self._make_call('GET', **kwargs)
 
-    def post(self, path, data=None, body=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('POST', path, data, body, cookies, headers, **kwargs)
+    def post(self, path, **kwargs):
+        return self._make_call('POST', path, **kwargs)
 
-    def put(self, path, data=None, body=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('PUT', path, data, body, cookies, headers, **kwargs)
+    def put(self, path, **kwargs):
+        return self._make_call('PUT', path, **kwargs)
 
-    def delete(self, path, data=None, body=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('DELETE', path, data, body, cookies, headers, **kwargs)
+    def delete(self, path, **kwargs):
+        return self._make_call('DELETE', path, **kwargs)
 
-    def _make_call(self, method, path, data, body, headers, cookies, **kwargs):
+    def _make_call(self, method, path, **kwargs):
         """
         Call the service method defined by the passed path and http method.
         Additional arguments include cookies, headers, body, and data values.
         """
         base = self.config.get('url')
         url = '/'.join([base.rstrip('/'), path.lstrip('/')])
+        verify = self.config.get('verify_ssl', True)
 
-        request = Request(url, method, data, body, headers, cookies, self.config.get('verify_ssl', True))
+        request = Request(url, method, verify=verify, **kwargs)
 
         self.pre_send(request, **kwargs)
         response = request.send()
