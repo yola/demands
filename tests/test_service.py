@@ -99,12 +99,10 @@ class HttpServiceTests(unittest2.TestCase):
 
     def test_post_send_raises_exception_with_details_on_error(self):
         self.response.configure_mock(status_code=500, content='content')
-        try:
+        with self.assertRaises(HTTPServiceError) as e:
             self.service.post_send(self.request, self.response)
-            self.assertFail('HTTPServiceError not raised')
-        except HTTPServiceError, e:
-            self.assertEqual(e.code, 500)
-            self.assertEqual(e.details, 'content')
+        self.assertEqual(e.exception.code, 500)
+        self.assertEqual(e.exception.details, 'content')
 
     def test_post_sends_no_exception_in_case_of_expected_response_code(self):
         self.response.configure_mock(status_code=404, content='content')
