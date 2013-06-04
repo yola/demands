@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 class Request(object):
     """Request object for http requests/responses."""
-    
+
     def __init__(self, url, method, cookies=None, data=None, headers=None,
                  params=None, verify=False):
         self.url = url or {}
@@ -32,17 +32,18 @@ class Request(object):
         return arguments
 
     def authenticate(self, username, password):
-        """Enable http authentication with the provided username and password"""
+        """Enable http username/pass authentication. """
         log.debug('Authentication via HTTP auth as "%s"', username)
         self.auth = (username, password)
 
     def send(self):
-        """Execute the request, and return the response"""
+        """Execute the request and return the response."""
         method = self.method.lower()
         request_arguments = self._compose_request_arguments()
         start_time = time.time()
         response = getattr(requests, method)(self.url, **request_arguments)
-        log.debug('%s HTTP [%s] call to "%s" %.2fms', response.status_code, self.method, self.url,
+        log.debug('%s HTTP [%s] call to "%s" %.2fms',
+                  response.status_code, self.method, self.url,
                   (time.time() - start_time) * 1000)
         log.debug('HTTP request args: %s', request_arguments)
         return response
@@ -57,17 +58,16 @@ class HTTPServiceError(Exception):
 
 
 class HTTPService(object):
-    """
-    Provides an interface which allows arbitrary methods to be defined and
-    called on a remote http service.
-    """
+    """Extendable base service client object"""
+
     def __init__(self, config):
         self.config = config
 
     def pre_send(self, request, **params):
-        """
-        Override to modify request object to be called just before sending
-        the request
+        """Called just before sending request.
+
+        Used to modify the request object before the request is sent.
+
         """
         if 'username' in self.config:
             request.authenticate(
@@ -81,13 +81,21 @@ class HTTPService(object):
             )
 
     def post_send(self, request, response, **params):
-        """Override to modify response object returned by call made by request object."""
-        response.is_ok = response.status_code < 300
-        if (not response.is_ok and
-                not response.status_code in params.get('expected_response_codes', [])):
-            log.error('Unexpected response from %s: url: %s, code: %s, details: %s',
-                self.__class__.__name__, response.url, response.status_code, response.content)
+        """Called after request is sent.
 
+        Override to modify response object returned by call made by
+        request object.
+
+        """
+        response.is_ok = response.status_code < 300
+        expected_response_codes = params.get('expected_response_codes', [])
+        if response.is_ok or response.status_code in expected_response_codes:
+            return
+        else:
+            log.error(
+                'Unexpected response from %s: url: %s, code: %s, details: %s',
+                self.__class__.__name__, response.url, response.status_code,
+                response.content)
             raise HTTPServiceError(response.status_code, response.content)
 
     def get(self, path, **kwargs):
@@ -103,14 +111,15 @@ class HTTPService(object):
         return self._make_call('DELETE', path, **kwargs)
 
     def _make_call(self, method, path, **kwargs):
-        """
-        Call the service method defined by the passed path and http method.
+        """Call the service method defined by the passed path and http method.
+
         Additional arguments include cookies, headers, body, and data values.
+
         """
         base = self.config.get('url')
         url = '/'.join([base.rstrip('/'), path.lstrip('/')])
 
-        # Verify precedence 
+        # Verify precedence
         # HTTP (False) < HTTPS (True) < HTTPService config < call argument
         verify = True if url.startswith('https') else False
         verify = self.config.get('verify_ssl', verify)
