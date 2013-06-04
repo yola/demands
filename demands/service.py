@@ -28,10 +28,7 @@ class Request(object):
         arguments['cookies'] = self.cookies
         arguments['headers'] = self.headers
         arguments['auth'] = self.auth
-
-        if self.url.startswith('https'):
-            arguments['verify'] = self.verify
-
+        arguments['verify'] = self.verify
         return arguments
 
     def authenticate(self, username, password):
@@ -112,7 +109,12 @@ class HTTPService(object):
         """
         base = self.config.get('url')
         url = '/'.join([base.rstrip('/'), path.lstrip('/')])
-        verify = self.config.get('verify_ssl', True)
+
+        # Verify precedence 
+        # HTTP (False) < HTTPS (True) < HTTPService config < call argument
+        verify = True if url.startswith('https') else False
+        verify = self.config.get('verify_ssl', verify)
+        verify = kwargs.pop('verify', verify)
 
         request = Request(url, method, verify=verify, **kwargs)
 
