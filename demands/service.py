@@ -57,6 +57,7 @@ class Request(object):
 class HTTPServiceError(Exception):
     def __init__(self, code, details):
         self.code = code
+        self.details = details
         super(Exception, self).__init__(
             'code: %s, details: %s' % (code, details)
         )
