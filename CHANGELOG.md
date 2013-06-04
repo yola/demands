@@ -5,6 +5,9 @@
 * PEP8 the source
 * Fix bug with PUT data
 
+## 0.2.1
+* Save error response content in HTTPServiceError exception
+
 ## 0.2.0
 * Switches to requests > 1.0.0
 
