@@ -125,7 +125,7 @@ class HTTPService(object):
 
         # Verify precedence
         # HTTP (False) < HTTPS (True) < HTTPService config < call argument
-        verify = True if url.startswith('https') else False
+        verify = url.startswith('https')
         verify = self.config.get('verify_ssl', verify)
         verify = kwargs.pop('verify', verify)
 
