@@ -90,9 +90,9 @@ class HTTPService(object):
         """
         response.is_ok = response.status_code < 300
         expected_response_codes = params.get('expected_response_codes', [])
-        if response.is_ok or response.status_code in expected_response_codes:
-            return
-        else:
+        response_ok = (response.is_ok or
+                       response.status_code in expected_response_codes)
+        if not response_ok:
             log.error(
                 'Unexpected response from %s: url: %s, code: %s, details: %s',
                 self.__class__.__name__, response.url, response.status_code,
