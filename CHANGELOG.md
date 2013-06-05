@@ -1,9 +1,8 @@
 # Changelog
 
 ## 1.0.0
-* Update Request obj (and tests) to match how requests lib is written
-* PEP8 the source
-* Fix bug with PUT data
+* Update `Request` to match `requests` field names
+* Support both data and params with PUT requests
 
 ## 0.2.1
 * Save error response content in HTTPServiceError exception
