@@ -11,8 +11,8 @@ class Request(object):
 
     def __init__(self, url, method, cookies=None, data=None, headers=None,
                  params=None, verify=False):
-        self.url = url or {}
-        self.method = method or {}
+        self.url = url
+        self.method = method
         self.cookies = cookies or {}
         self.data = data or {}
         self.headers = headers or {}
