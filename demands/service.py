@@ -108,6 +108,9 @@ class HTTPService(object):
     def put(self, path, **kwargs):
         return self._make_call('PUT', path, **kwargs)
 
+    def patch(self, path, **kwargs):
+        return self._make_call('PATCH', path, **kwargs)
+
     def delete(self, path, **kwargs):
         return self._make_call('DELETE', path, **kwargs)
 
