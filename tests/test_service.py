@@ -62,6 +62,43 @@ class RequestTests(PatchedRequestsTests):
             self.url, auth=None, cookies=cookies, data={}, params=params,
             headers={}, verify=False)
 
+class MockedHttpServiceTests(PatchedRequestsTests):
+    
+    def setUp(self):
+        PatchedRequestsTests.setUp(self)
+        self.service = HTTPService({
+            'url': 'http://service.com/'
+        })
+
+    def test_get_request(self):
+        """test minimal GET request"""
+        self.service.get('/get-endpoint', params={'foo': 'bar'})
+        self.requests.get.assert_called_with(
+            'http://service.com/get-endpoint', auth=None, cookies={}, data={},
+            headers={}, params={'foo': 'bar'}, verify=False)
+
+    def test_minimal_post_request(self):
+        """test minimal POST request"""
+        self.service.post('/post-endpoint')
+        self.requests.post.assert_called_with(
+            'http://service.com/post-endpoint', auth=None, cookies={},
+            data={}, headers={}, params={}, verify=False)
+    
+    def test_minimal_put_request(self):
+        """test minimal PUT request"""
+        self.service.put('/put-endpoint')
+        self.requests.put.assert_called_with(
+            'http://service.com/put-endpoint', auth=None, cookies={},
+            data={}, headers={}, params={}, verify=False)
+    
+    def test_minimal_delete_request(self):
+        """test minimal DELETE request"""
+        self.service.delete('/delete-endpoint')
+        self.requests.delete.assert_called_with(
+            'http://service.com/delete-endpoint', auth=None, cookies={},
+            data={}, headers={}, params={}, verify=False)
+        
+
 
 class HttpServiceTests(unittest2.TestCase):
     def setUp(self):
@@ -70,6 +107,33 @@ class HttpServiceTests(unittest2.TestCase):
         })
         self.request = Request('http://service.com/', 'GET')
         self.response = Mock(headers={'content-type': 'text/plan'})
+
+    @patch('demands.service.requests.get')
+    def test_minimal_get_request(self, mocked_get):
+        """test minimal GET request"""
+        mocked_get.return_value = Mock(status_code=200)
+        self.service.get('/endpoint', params={'foo': 'bar'})
+        mocked_get.assert_called_with(
+            'http://service.com/endpoint', auth=None, cookies={}, data={},
+            headers={}, params={'foo': 'bar'}, verify=False)
+    
+    @patch('demands.service.requests.post')
+    def test_minimal_post_request(self, mocked_post):
+        """test minimal POST request"""
+        mocked_post.return_value = Mock(status_code=200)
+        self.service.post('/endpoint', params={'fee': 'fi'})
+        mocked_post.assert_called_with(
+            'http://service.com/endpoint', auth=None, cookies={}, data={},
+            headers={}, params={'fee': 'fi'}, verify=False)
+    
+    @patch('demands.service.requests.post')
+    def test_minimal_post_request(self, mocked_post):
+        """test minimal POST request"""
+        mocked_post.return_value = Mock(status_code=200)
+        self.service.post('/endpoint', params={'fee': 'fi'})
+        mocked_post.assert_called_with(
+            'http://service.com/endpoint', auth=None, cookies={}, data={},
+            headers={}, params={'fee': 'fi'}, verify=False)
 
     def test_pre_send_triggers_authentication_when_username_provided(self):
         service = HTTPService({

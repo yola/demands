@@ -100,7 +100,7 @@ class HTTPService(object):
             raise HTTPServiceError(response.status_code, response.content)
 
     def get(self, path, **kwargs):
-        return self._make_call('GET', **kwargs)
+        return self._make_call('GET', path, **kwargs)
 
     def post(self, path, **kwargs):
         return self._make_call('POST', path, **kwargs)
