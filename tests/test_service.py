@@ -31,12 +31,12 @@ class RequestTests(PatchedRequestsTests):
         request.send()
         self.requests.post.assert_called_with(
             self.url, auth=None, cookies={}, data={}, headers={},
-            params={}, verify=False)
+            params={}, verify=True)
 
     def test_request_properly_authenticates(self):
         username, password = 'stevemcqueen', 'password'
         url = 'https://localhost/'
-        request = Request(url, 'POST', verify=True)
+        request = Request(url, 'POST')
         request.authenticate(username, password)
         request.send()
         self.requests.post.assert_called_once_with(
@@ -50,7 +50,7 @@ class RequestTests(PatchedRequestsTests):
         request.send()
         self.requests.get.assert_called_with(
             self.url, auth=None, cookies={}, data={}, headers=headers,
-            params={}, verify=False)
+            params={}, verify=True)
 
     def test_post_request_cookies_and_params(self):
         """test POST request cookies and params"""
@@ -60,7 +60,7 @@ class RequestTests(PatchedRequestsTests):
         request.send()
         self.requests.post.assert_called_with(
             self.url, auth=None, cookies=cookies, data={}, params=params,
-            headers={}, verify=False)
+            headers={}, verify=True)
 
 class MockedHttpServiceTests(PatchedRequestsTests):
     
@@ -75,28 +75,28 @@ class MockedHttpServiceTests(PatchedRequestsTests):
         self.service.get('/get-endpoint', params={'foo': 'bar'})
         self.requests.get.assert_called_with(
             'http://service.com/get-endpoint', auth=None, cookies={}, data={},
-            headers={}, params={'foo': 'bar'}, verify=False)
+            headers={}, params={'foo': 'bar'}, verify=True)
 
     def test_minimal_post_request(self):
         """test minimal POST request"""
         self.service.post('/post-endpoint')
         self.requests.post.assert_called_with(
             'http://service.com/post-endpoint', auth=None, cookies={},
-            data={}, headers={}, params={}, verify=False)
+            data={}, headers={}, params={}, verify=True)
     
     def test_minimal_put_request(self):
         """test minimal PUT request"""
         self.service.put('/put-endpoint')
         self.requests.put.assert_called_with(
             'http://service.com/put-endpoint', auth=None, cookies={},
-            data={}, headers={}, params={}, verify=False)
+            data={}, headers={}, params={}, verify=True)
     
     def test_minimal_delete_request(self):
         """test minimal DELETE request"""
         self.service.delete('/delete-endpoint')
         self.requests.delete.assert_called_with(
             'http://service.com/delete-endpoint', auth=None, cookies={},
-            data={}, headers={}, params={}, verify=False)
+            data={}, headers={}, params={}, verify=True)
         
 
 
@@ -115,7 +115,7 @@ class HttpServiceTests(unittest2.TestCase):
         self.service.get('/endpoint', params={'foo': 'bar'})
         mocked_get.assert_called_with(
             'http://service.com/endpoint', auth=None, cookies={}, data={},
-            headers={}, params={'foo': 'bar'}, verify=False)
+            headers={}, params={'foo': 'bar'}, verify=True)
     
     @patch('demands.service.requests.post')
     def test_minimal_post_request(self, mocked_post):
@@ -124,7 +124,7 @@ class HttpServiceTests(unittest2.TestCase):
         self.service.post('/endpoint', params={'fee': 'fi'})
         mocked_post.assert_called_with(
             'http://service.com/endpoint', auth=None, cookies={}, data={},
-            headers={}, params={'fee': 'fi'}, verify=False)
+            headers={}, params={'fee': 'fi'}, verify=True)
     
     @patch('demands.service.requests.post')
     def test_minimal_post_request(self, mocked_post):
@@ -133,7 +133,7 @@ class HttpServiceTests(unittest2.TestCase):
         self.service.post('/endpoint', params={'fee': 'fi'})
         mocked_post.assert_called_with(
             'http://service.com/endpoint', auth=None, cookies={}, data={},
-            headers={}, params={'fee': 'fi'}, verify=False)
+            headers={}, params={'fee': 'fi'}, verify=True)
 
     def test_pre_send_triggers_authentication_when_username_provided(self):
         service = HTTPService({

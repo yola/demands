@@ -10,7 +10,7 @@ class Request(object):
     """Request object for http requests/responses."""
 
     def __init__(self, url, method, cookies=None, data=None, headers=None,
-                 params=None, verify=False):
+                 params=None, verify=True):
         self.url = url
         self.method = method
         self.cookies = cookies or {}
@@ -123,13 +123,7 @@ class HTTPService(object):
         base = self.config.get('url')
         url = '/'.join([base.rstrip('/'), path.lstrip('/')])
 
-        # Verify precedence
-        # HTTP (False) < HTTPS (True) < HTTPService config < call argument
-        verify = url.startswith('https')
-        verify = self.config.get('verify_ssl', verify)
-        verify = kwargs.pop('verify', verify)
-
-        request = Request(url, method, verify=verify, **kwargs)
+        request = Request(url, method, **kwargs)
 
         self.pre_send(request, **kwargs)
         response = request.send()
