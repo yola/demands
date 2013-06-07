@@ -2,6 +2,8 @@ import logging
 import requests
 import time
 
+from urlparse import urljoin
+
 
 log = logging.getLogger(__name__)
 
@@ -73,7 +75,7 @@ class HTTPService(object):
         self.client_name = client_name
         self.client_version = client_version
         self.app_name = app_name
-        
+
     def pre_send(self, request, **kwargs):
         """Called just before sending request.
 
@@ -127,9 +129,7 @@ class HTTPService(object):
         Additional arguments include cookies, headers, body, and data values.
 
         """
-        base = self.url
-        url = '/'.join([base.rstrip('/'), path.lstrip('/')])
-
+        url = urljoin(self.url, path)
         request = Request(url, method, **kwargs)
 
         self.pre_send(request, **kwargs)
