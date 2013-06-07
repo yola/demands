@@ -1,8 +1,18 @@
 # Changelog
 
 ## 1.0.0
+* HTTPService invoked with arguments instead of a dictionary
 * Update `Request` to match `requests` field names
-* Support both data and params with PUT requests
+
+    Before
+    * `data`, used for both query string and request body
+    * `verify_ssl`
+
+    Now
+    * `params`: dictionary or bytes to be sent in the query string
+    * `data`: dictionary, bytes, or file-like object to send in the body
+    * `verify`: verify the SSL cert
+
 
 ## 0.2.1
 * Save error response content in HTTPServiceError exception

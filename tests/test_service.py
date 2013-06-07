@@ -66,9 +66,7 @@ class MockedHttpServiceTests(PatchedRequestsTests):
     
     def setUp(self):
         PatchedRequestsTests.setUp(self)
-        self.service = HTTPService({
-            'url': 'http://service.com/'
-        })
+        self.service = HTTPService('http://service.com/')
 
     def test_get_request(self):
         """test minimal GET request"""
@@ -102,9 +100,7 @@ class MockedHttpServiceTests(PatchedRequestsTests):
 
 class HttpServiceTests(unittest2.TestCase):
     def setUp(self):
-        self.service = HTTPService({
-            'url': 'http://service.com/'
-        })
+        self.service = HTTPService('http://service.com/')
         self.request = Request('http://service.com/', 'GET')
         self.response = Mock(headers={'content-type': 'text/plan'})
 
@@ -136,21 +132,21 @@ class HttpServiceTests(unittest2.TestCase):
             headers={}, params={'fee': 'fi'}, verify=True)
 
     def test_pre_send_triggers_authentication_when_username_provided(self):
-        service = HTTPService({
-            'url': 'http://localhost/',
-            'username': 'foo',
-            'password': 'bar'
-        })
+        service = HTTPService(
+            url='http://localhost/',
+            username='foo',
+            password='bar',
+        )
         service.pre_send(self.request)
         self.assertEqual(self.request.auth, ('foo', 'bar'))
 
     def test_pre_send_can_trigger_client_identification(self):
-        service = HTTPService({
-            'url': 'http://localhost/',
-            'client_name': 'my_client',
-            'client_version': '1.2.3',
-            'app_name': 'my_app'
-        })
+        service = HTTPService(
+            url='http://localhost/',
+            client_name='my_client',
+            client_version='1.2.3',
+            app_name='my_app',
+        )
         service.pre_send(self.request)
         self.assertEqual(
             self.request.headers['User-Agent'], 'my_client 1.2.3 - my_app')

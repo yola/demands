@@ -29,6 +29,8 @@ class DummyService(HTTPService):
         return response.json if response.is_ok else default_user
 ```
 
+Helpful to know the [requests developer interface](https://requests.readthedocs.org/en/latest/api/).
+
 ## Testing
 
 Install development requirements:

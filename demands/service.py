@@ -61,24 +61,33 @@ class HTTPServiceError(Exception):
 class HTTPService(object):
     """Extendable base service client object"""
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, url=None, verify=True, username=None, password=None,
+                 client_name=None, client_version='x.y.z', app_name='unknown'):
 
+        assert url, "HTTPService requires 'url'"
+
+        self.url = url
+        self.verify = verify
+        self.username = username
+        self.password = password
+        self.client_name = client_name
+        self.client_version = client_version
+        self.app_name = app_name
+        
     def pre_send(self, request, **params):
         """Called just before sending request.
 
         Used to modify the request object before the request is sent.
 
         """
-        if 'username' in self.config:
-            request.authenticate(
-                self.config['username'], self.config['password'])
+        if self.username:
+            request.authenticate(self.username, self.password)
 
-        if 'client_name' in self.config:
+        if self.client_name:
             request.headers['User-Agent'] = '%s %s - %s' % (
-                self.config['client_name'],
-                self.config.get('client_version', 'x.y.z'),
-                self.config.get('app_name', 'unknown'),
+                self.client_name,
+                self.client_version,
+                self.app_name,
             )
 
     def post_send(self, request, response, **params):
@@ -120,7 +129,7 @@ class HTTPService(object):
         Additional arguments include cookies, headers, body, and data values.
 
         """
-        base = self.config.get('url')
+        base = self.url
         url = '/'.join([base.rstrip('/'), path.lstrip('/')])
 
         request = Request(url, method, **kwargs)
