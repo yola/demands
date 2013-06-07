@@ -1,54 +1,10 @@
 import logging
-import requests
-import time
 
 from urlparse import urljoin
+from requests import Session
 
 
 log = logging.getLogger(__name__)
-
-
-class Request(object):
-    """Request object for http requests/responses."""
-
-    def __init__(self, url, method, cookies=None, data=None, headers=None,
-                 params=None, verify=True):
-        self.url = url
-        self.method = method
-        self.cookies = cookies or {}
-        self.data = data or {}
-        self.headers = headers or {}
-        self.params = params or {}
-        self.verify = verify
-        self.auth = None
-
-    def _compose_request_arguments(self):
-        """Compose arguments as expected by the requests library."""
-        arguments = {}
-        arguments['params'] = self.params
-        arguments['data'] = self.data
-        arguments['cookies'] = self.cookies
-        arguments['headers'] = self.headers
-        arguments['auth'] = self.auth
-        arguments['verify'] = self.verify
-        return arguments
-
-    def authenticate(self, username, password):
-        """Enable http username/pass authentication. """
-        log.debug('Authentication via HTTP auth as "%s"', username)
-        self.auth = (username, password)
-
-    def send(self):
-        """Execute the request and return the response."""
-        method = self.method.lower()
-        request_arguments = self._compose_request_arguments()
-        start_time = time.time()
-        response = getattr(requests, method)(self.url, **request_arguments)
-        log.debug('%s HTTP [%s] call to "%s" %.2fms',
-                  response.status_code, self.method, self.url,
-                  (time.time() - start_time) * 1000)
-        log.debug('HTTP request args: %s', request_arguments)
-        return response
 
 
 class HTTPServiceError(Exception):
@@ -60,79 +16,54 @@ class HTTPServiceError(Exception):
         )
 
 
-class HTTPService(object):
+class HTTPService(Session):
     """Extendable base service client object"""
 
-    def __init__(self, url=None, verify=True, username=None, password=None,
-                 client_name=None, client_version='x.y.z', app_name='unknown'):
+    def __init__(self, url, **kwargs):
+        super(HTTPService, self).__init__()
+        self.service_url = url
+        self.request_params = {}
+        self.expected_response_codes = []
+        self.update(**kwargs)
 
-        assert url, "HTTPService requires 'url'"
+    def update(self, **kwargs):
+        """Extract custom parameters, update request parameters"""
+        if kwargs.get('expected_response_codes'):
+            self.expected_response_codes = kwargs.pop(
+                'expected_response_codes')
 
-        self.url = url
-        self.verify = verify
-        self.username = username
-        self.password = password
-        self.client_name = client_name
-        self.client_version = client_version
-        self.app_name = app_name
+        if kwargs.get('username'):
+            auth = kwargs.pop('username'), kwargs.pop('password', None)
+            self.request_params['auth'] = auth
 
-    def pre_send(self, request, **kwargs):
-        """Called just before sending request.
+        if kwargs.get('client_name'):
+            headers = self.request_params.get('headers') or {}
+            headers.update(kwargs.pop('headers', {}))
+            headers.update({
+                'User-Agent': '%s %s - %s' % (
+                    kwargs.pop('client_name'),
+                    kwargs.pop('client_version', 'x.y.z'),
+                    kwargs.pop('app_name', 'unknown'),)
+            })
+            self.request_params['headers'] = headers
 
-        Used to modify the request object before the request is sent.
+        self.request_params.update(kwargs)
 
-        """
-        if self.username:
-            request.authenticate(self.username, self.password)
+    def request(self, method, path, **kwargs):
+        self.update(**kwargs)
+        url = urljoin(self.service_url, path)
+        response = super(HTTPService, self).request(
+            method, url, **self.request_params)
+        self.post_send(response)
+        return response
 
-        if self.client_name:
-            request.headers['User-Agent'] = '%s %s - %s' % (
-                self.client_name,
-                self.client_version,
-                self.app_name,
-            )
-
-    def post_send(self, request, response, **kwargs):
-        """Called after request is sent.
-
-        Override to modify response object returned by call made by
-        request object.
-
-        """
+    def post_send(self, response):
+        """Ensure successful responses from API endpoints"""
         response.is_ok = response.status_code < 300
-        expected_codes = kwargs.get('expected_response_codes', [])
-        if not (response.is_ok or response.status_code in expected_codes):
+        expected_code = response.status_code in self.expected_response_codes
+        if not (response.is_ok or expected_code):
             log.error(
                 'Unexpected response from %s: url: %s, code: %s, details: %s',
                 self.__class__.__name__, response.url, response.status_code,
                 response.content)
             raise HTTPServiceError(response.status_code, response.content)
-
-    def get(self, path, **kwargs):
-        return self._make_call('GET', path, **kwargs)
-
-    def post(self, path, **kwargs):
-        return self._make_call('POST', path, **kwargs)
-
-    def put(self, path, **kwargs):
-        return self._make_call('PUT', path, **kwargs)
-
-    def patch(self, path, **kwargs):
-        return self._make_call('PATCH', path, **kwargs)
-
-    def delete(self, path, **kwargs):
-        return self._make_call('DELETE', path, **kwargs)
-
-    def _make_call(self, method, path, **kwargs):
-        """Call the service method defined by the passed path and http method.
-
-        Additional arguments include cookies, headers, body, and data values.
-
-        """
-        url = urljoin(self.url, path)
-        request = Request(url, method, **kwargs)
-
-        self.pre_send(request, **kwargs)
-        response = request.send()
-        self.post_send(request, response, **kwargs)
-        return response
