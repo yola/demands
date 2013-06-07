@@ -98,10 +98,8 @@ class HTTPService(object):
 
         """
         response.is_ok = response.status_code < 300
-        expected_response_codes = kwargs.get('expected_response_codes', [])
-        response_ok = (response.is_ok or
-                       response.status_code in expected_response_codes)
-        if not response_ok:
+        expected_codes = kwargs.get('expected_response_codes', [])
+        if not (response.is_ok or response.status_code in expected_codes):
             log.error(
                 'Unexpected response from %s: url: %s, code: %s, details: %s',
                 self.__class__.__name__, response.url, response.status_code,
