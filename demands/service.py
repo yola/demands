@@ -74,7 +74,7 @@ class HTTPService(object):
         self.client_version = client_version
         self.app_name = app_name
         
-    def pre_send(self, request, **params):
+    def pre_send(self, request, **kwargs):
         """Called just before sending request.
 
         Used to modify the request object before the request is sent.
@@ -90,7 +90,7 @@ class HTTPService(object):
                 self.app_name,
             )
 
-    def post_send(self, request, response, **params):
+    def post_send(self, request, response, **kwargs):
         """Called after request is sent.
 
         Override to modify response object returned by call made by
@@ -98,7 +98,7 @@ class HTTPService(object):
 
         """
         response.is_ok = response.status_code < 300
-        expected_response_codes = params.get('expected_response_codes', [])
+        expected_response_codes = kwargs.get('expected_response_codes', [])
         response_ok = (response.is_ok or
                        response.status_code in expected_response_codes)
         if not response_ok:
