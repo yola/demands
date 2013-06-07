@@ -1,1 +1,1 @@
-from service import HTTPService, HTTPServiceError
+from models import HTTPService, HTTPServiceError
