@@ -28,15 +28,15 @@ class HTTPService(Session):
 
     def update(self, **kwargs):
         """Extract custom parameters, update request parameters"""
-        if kwargs.get('expected_response_codes'):
+        if 'expected_response_codes' in kwargs:
             self.expected_response_codes = kwargs.pop(
                 'expected_response_codes')
 
-        if kwargs.get('username'):
+        if 'username' in kwargs:
             auth = kwargs.pop('username'), kwargs.pop('password', None)
             self.request_params['auth'] = auth
 
-        if kwargs.get('client_name'):
+        if 'client_name' in kwargs:
             headers = self.request_params.get('headers') or {}
             headers.update(kwargs.pop('headers', {}))
             headers.update({
