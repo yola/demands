@@ -24,9 +24,9 @@ class HTTPService(Session):
         self.url = url
         self.request_params = {}
         self.expected_response_codes = []
-        self.update(**kwargs)
+        self._get_request_params(**kwargs)
 
-    def update(self, **kwargs):
+    def _get_request_params(self, **kwargs):
         """Extract custom parameters, update request parameters"""
         if 'expected_response_codes' in kwargs:
             self.expected_response_codes = kwargs.pop(
@@ -53,7 +53,7 @@ class HTTPService(Session):
         self.request_params.update(kwargs)
 
     def request(self, method, path, **kwargs):
-        self.update(**kwargs)
+        self._get_request_params(**kwargs)
         url = urljoin(self.url, path)
         response = super(HTTPService, self).request(
             method, url, **self.request_params)
