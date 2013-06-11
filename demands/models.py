@@ -21,7 +21,7 @@ class HTTPService(Session):
 
     def __init__(self, url, **kwargs):
         super(HTTPService, self).__init__()
-        self.service_url = url
+        self.url = url
         self.request_params = {}
         self.expected_response_codes = []
         self.update(**kwargs)
@@ -54,7 +54,7 @@ class HTTPService(Session):
 
     def request(self, method, path, **kwargs):
         self.update(**kwargs)
-        url = urljoin(self.service_url, path)
+        url = urljoin(self.url, path)
         response = super(HTTPService, self).request(
             method, url, **self.request_params)
         self.post_send(response)
