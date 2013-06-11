@@ -45,7 +45,8 @@ class HTTPService(Session):
                 'User-Agent': '%s %s - %s' % (
                     kwargs.pop('client_name'),
                     kwargs.pop('client_version', 'x.y.z'),
-                    kwargs.pop('app_name', 'unknown'),)
+                    kwargs.pop('app_name', 'unknown'),
+                )
             })
             self.request_params['headers'] = headers
 
