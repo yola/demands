@@ -33,8 +33,10 @@ class HTTPService(Session):
                 'expected_response_codes')
 
         if 'username' in kwargs:
-            auth = kwargs.pop('username'), kwargs.pop('password', None)
-            self.request_params['auth'] = auth
+            self.request_params['auth'] = (
+                kwargs.pop('username'),
+                kwargs.pop('password', None)
+            )
 
         if 'client_name' in kwargs:
             headers = self.request_params.get('headers') or {}
