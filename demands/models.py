@@ -25,12 +25,12 @@ class HTTPService(Session):
     def __init__(self, url, **kwargs):
         super(HTTPService, self).__init__()
         self.url = url
-        self.request_params = {}
-        self.request_params = self._get_request_params(**kwargs)
+        self._shared_request_params = {}
+        self._shared_request_params = self._get_request_params(**kwargs)
 
     def _get_request_params(self, **kwargs):
         """Return a copy of self.request_params updated with kwargs"""
-        request_params = dict(self.request_params)
+        request_params = dict(self._shared_request_params)
 
         if 'expected_response_codes' in kwargs:
             del kwargs['expected_response_codes']
