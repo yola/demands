@@ -15,7 +15,7 @@ class HTTPServiceError(Exception):
         except ValueError:
             self.details = response.content
         super(Exception, self).__init__(
-            'code: %s, details: %s' % (self.code, self.details)
+            'code: %s, details: %s' % (response.status_code, self.details)
         )
 
 
