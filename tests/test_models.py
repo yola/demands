@@ -99,8 +99,8 @@ class HttpServiceTests(PatchedSessionTests):
     def test_post_sends_no_exception_in_case_of_expected_response_code(self):
         self.response.configure_mock(
             status_code=404, content='content', url='http://notfound/')
-        self.service.expected_response_codes = (404,)
-        self.service.request('METHOD', 'http://notfound/')
+        self.service.request(
+            'METHOD', 'http://notfound/', expected_response_codes=(404,))
 
     @patch('demands.models.log')
     def test_post_send_logs_errors(self, mock_log):

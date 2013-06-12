@@ -25,8 +25,6 @@ class HTTPService(Session):
     def __init__(self, url, **kwargs):
         super(HTTPService, self).__init__()
         self.url = url
-        self.expected_response_codes = kwargs.pop(
-            'expected_response_codes', [])
         self.request_params = {}
         self.request_params = self._get_request_params(**kwargs)
 
@@ -74,8 +72,7 @@ class HTTPService(Session):
             (time.time() - start_time) * 1000)
         log.debug('HTTP request params: %s', request_params)
 
-        expected_codes = kwargs.get(
-            'expected_response_codes', self.expected_response_codes)
+        expected_codes = kwargs.get('expected_response_codes', [])
         response, expected_codes = self.post_send(response, expected_codes)
         self._demand_success(response, expected_codes)
         return response
