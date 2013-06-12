@@ -9,11 +9,13 @@ log = logging.getLogger(__name__)
 
 
 class HTTPServiceError(Exception):
-    def __init__(self, code, details):
-        self.code = code
-        self.details = details
+    def __init__(self, response):
+        try:
+            self.details = response.json()
+        except ValueError:
+            self.details = response.content
         super(Exception, self).__init__(
-            'code: %s, details: %s' % (code, details)
+            'code: %s, details: %s' % (self.code, self.details)
         )
 
 
@@ -93,4 +95,4 @@ class HTTPService(Session):
                 'Unexpected response from %s: url: %s, code: %s, details: %s',
                 self.__class__.__name__, response.url, response.status_code,
                 response.content)
-            raise HTTPServiceError(response.status_code, response.content)
+            raise HTTPServiceError(response)
