@@ -22,24 +22,26 @@ class HTTPService(Session):
     def __init__(self, url, **kwargs):
         super(HTTPService, self).__init__()
         self.url = url
+        self.expected_response_codes = kwargs.pop(
+            'expected_response_codes', [])
         self.request_params = {}
-        self.expected_response_codes = []
-        self._get_request_params(**kwargs)
+        self.request_params = self._get_request_params(**kwargs)
 
     def _get_request_params(self, **kwargs):
-        """Extract custom parameters, update request parameters"""
+        """Return a copy of self.request_params updated with kwargs"""
+        request_params = dict(self.request_params)
+
         if 'expected_response_codes' in kwargs:
-            self.expected_response_codes = kwargs.pop(
-                'expected_response_codes')
+            del kwargs['expected_response_codes']
 
         if 'username' in kwargs:
-            self.request_params['auth'] = (
+            request_params['auth'] = (
                 kwargs.pop('username'),
                 kwargs.pop('password', None)
             )
 
         if 'client_name' in kwargs:
-            headers = self.request_params.get('headers') or {}
+            headers = request_params.get('headers') or {}
             headers.update(kwargs.pop('headers', {}))
             headers.update({
                 'User-Agent': '%s %s - %s' % (
@@ -48,23 +50,37 @@ class HTTPService(Session):
                     kwargs.pop('app_name', 'unknown'),
                 )
             })
-            self.request_params['headers'] = headers
+            request_params['headers'] = headers
 
-        self.request_params.update(kwargs)
+        request_params.update(kwargs)
+        return request_params
 
     def request(self, method, path, **kwargs):
-        self._get_request_params(**kwargs)
+        """"Configure params. Send a Request. Demand and return a Response."""
         url = urljoin(self.url, path)
-        response = super(HTTPService, self).request(
-            method, url, **self.request_params)
-        self.post_send(response)
+        request_params = self._get_request_params(
+            url=url, method=method, **kwargs)
+        request_params = self.pre_send(request_params)
+
+        response = super(HTTPService, self).request(**request_params)
+
+        expected_codes = kwargs.get(
+            'expected_response_codes', self.expected_response_codes)
+        response, expected_codes = self.post_send(response, expected_codes)
+        self._demand_success(response, expected_codes)
         return response
 
-    def post_send(self, response):
-        """Ensure successful responses from API endpoints"""
+    def pre_send(self, request_params):
+        """"Override this method to modify sent request parameters"""
+        return request_params
+
+    def post_send(self, response, expected_response_codes):
+        """"Override this method to modify returned response"""
+        return response, expected_response_codes
+
+    def _demand_success(self, response, expected_codes):
         response.is_ok = response.status_code < 300
-        expected_code = response.status_code in self.expected_response_codes
-        if not (response.is_ok or expected_code):
+        if not (response.is_ok or response.status_code in expected_codes):
             log.error(
                 'Unexpected response from %s: url: %s, code: %s, details: %s',
                 self.__class__.__name__, response.url, response.status_code,

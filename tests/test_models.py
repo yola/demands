@@ -38,26 +38,26 @@ class HttpServiceTests(PatchedSessionTests):
         """GET request with url parameters"""
         self.service.get('/get-endpoint', params={'foo': 'bar'})
         self.request.assert_called_with(
-            'GET', 'http://service.com/get-endpoint',
+            method='GET', url='http://service.com/get-endpoint',
             allow_redirects=True, params={'foo': 'bar'})
 
     def test_minimal_post_request(self):
         """minimal POST request"""
         self.service.post('/post-endpoint')
         self.request.assert_called_with(
-            'POST', 'http://service.com/post-endpoint', data=None)
+            method='POST', url='http://service.com/post-endpoint', data=None)
 
     def test_minimal_put_request(self):
         """minimal PUT request"""
         self.service.put('/put-endpoint')
         self.request.assert_called_with(
-            'PUT', 'http://service.com/put-endpoint', data=None)
+            method='PUT', url='http://service.com/put-endpoint', data=None)
 
     def test_minimal_delete_request(self):
         """minimal DELETE request"""
         self.service.delete('/delete-endpoint')
         self.request.assert_called_with(
-            'DELETE', 'http://service.com/delete-endpoint')
+            method='DELETE', url='http://service.com/delete-endpoint')
 
     def test_sets_authentication_when_username_provided(self):
         service = HTTPService(
@@ -67,7 +67,7 @@ class HttpServiceTests(PatchedSessionTests):
         )
         service.get('/authed-endpoint')
         self.request.assert_called_with(
-            'GET', 'http://localhost/authed-endpoint',
+            method='GET', url='http://localhost/authed-endpoint',
             allow_redirects=True, auth=('foo', 'bar'))
 
     def test_client_identification_adds_user_agent_header(self):
@@ -80,19 +80,19 @@ class HttpServiceTests(PatchedSessionTests):
         )
         service.get('/test')
         self.request.assert_called_with(
-            'GET', 'http://localhost/test', allow_redirects=True,
+            method='GET', url='http://localhost/test', allow_redirects=True,
             headers={'User-Agent': 'my_client 1.2.3 - my_app'})
 
     def test_post_send_raise_exception_in_case_of_error(self):
         self.response.configure_mock(url='http://broken/', status_code=500)
         with self.assertRaises(HTTPServiceError):
-            self.service.post_send(self.response)
+            self.service.request('METHOD', 'http://broken/')
 
     def test_post_send_raises_exception_with_details_on_error(self):
         self.response.configure_mock(
             status_code=500, content='content', url='http://broken/')
         with self.assertRaises(HTTPServiceError) as e:
-            self.service.post_send(self.response)
+            self.service.request('METHOD', 'http://broken/')
             self.assertEqual(e.exception.code, 500)
             self.assertEqual(e.exception.details, 'content')
 
@@ -100,7 +100,7 @@ class HttpServiceTests(PatchedSessionTests):
         self.response.configure_mock(
             status_code=404, content='content', url='http://notfound/')
         self.service.expected_response_codes = (404,)
-        self.service.post_send(self.response)
+        self.service.request('METHOD', 'http://notfound/')
 
     @patch('demands.models.log')
     def test_post_send_logs_errors(self, mock_log):
@@ -108,7 +108,7 @@ class HttpServiceTests(PatchedSessionTests):
         self.response.configure_mock(
             status_code=500, content='content', url='http://service.com/')
         with self.assertRaises(HTTPServiceError):
-            self.service.post_send(self.response)
+            self.service.request('METHOD', 'http://service.com/')
             error_msg = get_parsed_log_message(mock_log, 'error')
             self.assertIn('service.com', error_msg)
             self.assertIn('500', error_msg)
