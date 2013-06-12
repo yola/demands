@@ -10,9 +10,7 @@ class PatchedSessionTests(unittest2.TestCase):
     def setUp(self):
         self.request_patcher = patch.object(Session, 'request')
         self.request = self.request_patcher.start()
-        self.response = Mock(spec=Response, status_code=200,
-                             content='content', url='url',
-                             headers={'content-type': 'application/json'})
+        self.response = Mock(spec=Response(), status_code=200)
         self.request.return_value = self.response
 
     def tearDown(self):
