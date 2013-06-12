@@ -53,7 +53,6 @@ class HTTPService(Session):
             log.debug('Authentication via HTTP auth as "%s"', username)
 
         request_params.update(kwargs)
-        request_params = self._sanitize_request_params(request_params)
         return request_params
 
     def _sanitize_request_params(self, request_params):
@@ -63,34 +62,45 @@ class HTTPService(Session):
                     if key in valid_args)
 
     def request(self, method, path, **kwargs):
-        """"Configure params. Send a Request. Demand and return a Response."""
+        """"Configure params. Send a <Request>. Demand and return a <Response>.
+
+        In addition to parameters allowed by `reqeust` there are:
+        :param expected_response_codes: workaround for services which returns
+            non-expected results, like we search for users - and expect []
+            in case nobody is found, but got 404 instead.
+        :param username: enables authenticated requests
+        :param password: used in conjunction with username
+
+        """
         url = urljoin(self.url, path)
         request_params = self._get_request_params(
             url=url, method=method, **kwargs)
         request_params = self.pre_send(request_params)
+        request_params = (request_params)
 
+        sanitized_params = self._sanitize_request_params(request_params)
         start_time = time.time()
-        response = super(HTTPService, self).request(**request_params)
+        response = super(HTTPService, self).request(**sanitized_params)
         log.debug(
             '%s HTTP [%s] call to "%s" %.2fms',
             response.status_code, method, response.url,
             (time.time() - start_time) * 1000)
         log.debug('HTTP request params: %s', request_params)
 
-        expected_codes = kwargs.get('expected_response_codes', [])
-        response, expected_codes = self.post_send(response, expected_codes)
-        self._demand_success(response, expected_codes)
+        response = self.post_send(response, request_params=request_params)
         return response
 
     def pre_send(self, request_params):
         """"Override this method to modify sent request parameters"""
         return request_params
 
-    def post_send(self, response, expected_response_codes):
+    def post_send(self, response, request_params={}):
         """"Override this method to modify returned response"""
-        return response, expected_response_codes
+        self._demand_success(response, request_params)
+        return response
 
-    def _demand_success(self, response, expected_codes):
+    def _demand_success(self, response, request_params):
+        expected_codes = request_params.get('expected_response_codes', [])
         response.is_ok = response.status_code < 300
         if not (response.is_ok or response.status_code in expected_codes):
             log.error(
