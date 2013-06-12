@@ -42,7 +42,7 @@ class HTTPService(Session):
 
         if 'client_name' in kwargs:
             # client name and version is important because we want to
-            # accruately log errors and throw deprecation warns when outdated
+            # accurately log errors and throw deprecation warns when outdated
             headers = request_params.get('headers') or {}
             headers.update(kwargs.pop('headers', {}))
             headers.update({
