@@ -64,7 +64,7 @@ class HTTPServiceClient(Session):
     def request(self, method, path, **kwargs):
         """"Configure params. Send a <Request>. Demand and return a <Response>.
 
-        In addition to parameters allowed by `reqeust` there are:
+        In addition to parameters allowed by `request` there are:
         :param expected_response_codes: workaround for services which returns
             non-expected results, like we search for users - and expect []
             in case nobody is found, but got 404 instead.
