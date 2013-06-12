@@ -2,7 +2,7 @@
 
 ## 1.0.0
 * HTTPService invoked with arguments instead of a dictionary
-* Update `Request` to match `requests` field names
+* Enable and match parameters used by `requests`
 
     Before
     * `data`, used for both query string and request body
