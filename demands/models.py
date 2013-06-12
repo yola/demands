@@ -1,5 +1,6 @@
 import logging
 import time
+import inspect
 
 from urlparse import urljoin
 from requests import Session
@@ -29,11 +30,8 @@ class HTTPService(Session):
         self._shared_request_params = self._get_request_params(**kwargs)
 
     def _get_request_params(self, **kwargs):
-        """Return a copy of self.request_params updated with kwargs"""
+        """Return a copy of self._shared_request_params updated with kwargs"""
         request_params = dict(self._shared_request_params)
-
-        if 'expected_response_codes' in kwargs:
-            del kwargs['expected_response_codes']
 
         if 'username' in kwargs:
             username = kwargs.pop('username')
@@ -55,7 +53,14 @@ class HTTPService(Session):
             request_params['headers'] = headers
 
         request_params.update(kwargs)
+        request_params = self._sanitize_request_params(request_params)
         return request_params
+
+    def _sanitize_request_params(self, request_params):
+        """Remove keyword arguments not used by `requests`"""
+        valid_args = inspect.getargspec(Session.request)[0]
+        return dict((key,val) for key, val in request_params.items()
+                    if key in valid_args)
 
     def request(self, method, path, **kwargs):
         """"Configure params. Send a Request. Demand and return a Response."""

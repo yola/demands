@@ -1,4 +1,5 @@
 import unittest2
+import inspect
 
 from requests import Session, Response
 from mock import Mock, patch
@@ -8,6 +9,13 @@ from demands.models import HTTPService, HTTPServiceError
 
 class PatchedSessionTests(unittest2.TestCase):
     def setUp(self):
+        # must patch inspect since it is used on Session.request, and when
+        # Session.request is mocked, inspect blows up
+        self.request_args = inspect.getargspec(Session.request)
+        self.inspect_patcher = patch('demands.models.inspect.getargspec')
+        self.patched_inspect = self.inspect_patcher.start()
+        self.patched_inspect.return_value = self.request_args
+
         self.request_patcher = patch.object(Session, 'request')
         self.request = self.request_patcher.start()
         self.response = Mock(spec=Response(), status_code=200)
@@ -15,6 +23,7 @@ class PatchedSessionTests(unittest2.TestCase):
 
     def tearDown(self):
         self.request_patcher.stop()
+        self.inspect_patcher.stop()
 
 
 class HttpServiceTests(PatchedSessionTests):
@@ -111,6 +120,16 @@ class HttpServiceTests(PatchedSessionTests):
             self.assertIn('service.com', error_msg)
             self.assertIn('500', error_msg)
             self.assertIn('content', error_msg)
+
+    def test_santization_of_request_parameters_removes_unknowns(self):
+        lots_of_params = {
+            'expected_response_codes': (404,),
+            'method': 'METHOD',
+            'something_odd': True
+        }
+        self.assertEqual(
+            self.service._sanitize_request_params(lots_of_params),
+            {'method': 'METHOD'})
 
 
 def get_parsed_log_message(mock_log, log_level):
