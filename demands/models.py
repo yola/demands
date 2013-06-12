@@ -21,11 +21,11 @@ class HTTPServiceError(Exception):
         )
 
 
-class HTTPService(Session):
+class HTTPServiceClient(Session):
     """Extendable base service client object"""
 
     def __init__(self, url, **kwargs):
-        super(HTTPService, self).__init__()
+        super(HTTPServiceClient, self).__init__()
         self.url = url
         self._shared_request_params = {}
         self._shared_request_params = self._get_request_params(**kwargs)
@@ -80,7 +80,7 @@ class HTTPService(Session):
 
         sanitized_params = self._sanitize_request_params(request_params)
         start_time = time.time()
-        response = super(HTTPService, self).request(**sanitized_params)
+        response = super(HTTPServiceClient, self).request(**sanitized_params)
         log.debug(
             '%s HTTP [%s] call to "%s" %.2fms',
             response.status_code, method, response.url,

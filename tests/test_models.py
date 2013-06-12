@@ -4,7 +4,7 @@ import inspect
 from requests import Session, Response
 from mock import Mock, patch
 
-from demands.models import HTTPService, HTTPServiceError
+from demands.models import HTTPServiceClient, HTTPServiceError
 
 
 class PatchedSessionTests(unittest2.TestCase):
@@ -30,7 +30,7 @@ class HttpServiceTests(PatchedSessionTests):
 
     def setUp(self):
         PatchedSessionTests.setUp(self)
-        self.service = HTTPService('http://service.com/')
+        self.service = HTTPServiceClient('http://service.com/')
 
     def test_returning_responses_from_all_session_calls(self):
         self.assertEqual(self.service.get('/path'), self.response)
@@ -67,7 +67,7 @@ class HttpServiceTests(PatchedSessionTests):
             method='DELETE', url='http://service.com/delete-endpoint')
 
     def test_sets_authentication_when_username_provided(self):
-        service = HTTPService(
+        service = HTTPServiceClient(
             url='http://localhost/',
             username='foo',
             password='bar',
@@ -79,7 +79,7 @@ class HttpServiceTests(PatchedSessionTests):
 
     def test_client_identification_adds_user_agent_header(self):
         """client identification adds User-Agent header"""
-        service = HTTPService(
+        service = HTTPServiceClient(
             url='http://localhost/',
             client_name='my_client',
             client_version='1.2.3',

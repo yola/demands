@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.0.0
-* HTTPService invoked with arguments instead of a dictionary
+* HTTPServiceClient invoked with arguments instead of a dictionary
 * Enable and match parameters used by `requests`
 
     Before

@@ -9,9 +9,8 @@ Written and used by the folks at Yola to support our [free website builder][1].
 
 ## Overview
 
-- HTTPService - base class for creating service clients, provides flexible way of http error handling
+- HTTPServiceClient - base class for creating service clients, provides flexible way of http error handling
 for descendants.  Supports pre- and post-send hooks.
-- Request - container for request related data
 - HTTPServiceError - exception raised on unexpected service response
 
 ## Usage
