@@ -41,6 +41,8 @@ class HTTPService(Session):
             log.debug('Authentication via HTTP auth as "%s"', username)
 
         if 'client_name' in kwargs:
+            # client name and version is important because we want to
+            # accruately log errors and throw deprecation warns when outdated
             headers = request_params.get('headers') or {}
             headers.update(kwargs.pop('headers', {}))
             headers.update({
