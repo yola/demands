@@ -1,4 +1,5 @@
 import logging
+import time
 
 from urlparse import urljoin
 from requests import Session
@@ -35,10 +36,9 @@ class HTTPService(Session):
             del kwargs['expected_response_codes']
 
         if 'username' in kwargs:
-            request_params['auth'] = (
-                kwargs.pop('username'),
-                kwargs.pop('password', None)
-            )
+            username = kwargs.pop('username')
+            request_params['auth'] = (username, kwargs.pop('password', None))
+            log.debug('Authentication via HTTP auth as "%s"', username)
 
         if 'client_name' in kwargs:
             headers = request_params.get('headers') or {}
@@ -62,7 +62,13 @@ class HTTPService(Session):
             url=url, method=method, **kwargs)
         request_params = self.pre_send(request_params)
 
+        start_time = time.time()
         response = super(HTTPService, self).request(**request_params)
+        log.debug(
+            '%s HTTP [%s] call to "%s" %.2fms',
+            response.status_code, method, response.url,
+            (time.time() - start_time) * 1000)
+        log.debug('HTTP request params: %s', request_params)
 
         expected_codes = kwargs.get(
             'expected_response_codes', self.expected_response_codes)

@@ -11,7 +11,7 @@ class PatchedSessionTests(unittest2.TestCase):
         self.request_patcher = patch.object(Session, 'request')
         self.request = self.request_patcher.start()
         self.response = Mock(spec=Response, status_code=200,
-                             content='',
+                             content='content', url='url',
                              headers={'content-type': 'application/json'})
         self.request.return_value = self.response
 
