@@ -29,6 +29,19 @@ class HTTPService(Session):
         self._shared_request_params = {}
         self._shared_request_params = self._get_request_params(**kwargs)
 
+        if 'client_name' in kwargs:
+            # client name and version is important because we want to
+            # accurately log errors and throw deprecation warns when outdated
+            headers = self._shared_request_params.get('headers') or {}
+            headers.update({
+                'User-Agent': '%s %s - %s' % (
+                    kwargs.pop('client_name'),
+                    kwargs.pop('client_version', 'x.y.z'),
+                    kwargs.pop('app_name', 'unknown'),
+                )
+            })
+            self._shared_request_params['headers'] = headers
+
     def _get_request_params(self, **kwargs):
         """Return a copy of self._shared_request_params updated with kwargs"""
         request_params = dict(self._shared_request_params)
@@ -38,20 +51,6 @@ class HTTPService(Session):
             request_params['auth'] = (username, kwargs.pop('password', None))
             log.debug('Authentication via HTTP auth as "%s"', username)
 
-        if 'client_name' in kwargs:
-            # client name and version is important because we want to
-            # accurately log errors and throw deprecation warns when outdated
-            headers = request_params.get('headers') or {}
-            headers.update(kwargs.pop('headers', {}))
-            headers.update({
-                'User-Agent': '%s %s - %s' % (
-                    kwargs.pop('client_name'),
-                    kwargs.pop('client_version', 'x.y.z'),
-                    kwargs.pop('app_name', 'unknown'),
-                )
-            })
-            request_params['headers'] = headers
-
         request_params.update(kwargs)
         request_params = self._sanitize_request_params(request_params)
         return request_params
@@ -59,7 +58,7 @@ class HTTPService(Session):
     def _sanitize_request_params(self, request_params):
         """Remove keyword arguments not used by `requests`"""
         valid_args = inspect.getargspec(Session.request)[0]
-        return dict((key,val) for key, val in request_params.items()
+        return dict((key, val) for key, val in request_params.items()
                     if key in valid_args)
 
     def request(self, method, path, **kwargs):
