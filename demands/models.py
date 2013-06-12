@@ -1,6 +1,7 @@
 import logging
 import time
 import inspect
+import copy
 
 from urlparse import urljoin
 from requests import Session
@@ -44,7 +45,7 @@ class HTTPService(Session):
 
     def _get_request_params(self, **kwargs):
         """Return a copy of self._shared_request_params updated with kwargs"""
-        request_params = dict(self._shared_request_params)
+        request_params = copy.deepcopy(self._shared_request_params)
 
         if 'username' in kwargs:
             username = kwargs.pop('username')
