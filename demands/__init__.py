@@ -75,7 +75,6 @@ class HTTPServiceClient(Session):
         request_params = self._get_request_params(
             url=url, method=method, **kwargs)
         request_params = self.pre_send(request_params)
-        request_params = (request_params)
 
         sanitized_params = self._sanitize_request_params(request_params)
         start_time = time.time()
