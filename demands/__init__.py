@@ -85,7 +85,7 @@ class HTTPServiceClient(Session):
             (time.time() - start_time) * 1000)
         log.debug('HTTP request params: %s', request_params)
 
-        response = self.post_send(response, request_params=request_params)
+        response = self.post_send(response, **request_params)
         return response
 
     def pre_send(self, request_params, **kwargs):
@@ -94,8 +94,7 @@ class HTTPServiceClient(Session):
 
     def post_send(self, response, **kwargs):
         """"Override this method to modify returned response"""
-        request_params = kwargs.get('request_params', {})
-        self._demand_success(response, request_params)
+        self._demand_success(response, kwargs)
         return response
 
     def _demand_success(self, response, request_params):
