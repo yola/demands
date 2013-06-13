@@ -33,14 +33,12 @@ class HTTPServiceClient(Session):
         if 'client_name' in kwargs:
             # client name and version is important because we want to
             # accurately log errors and throw deprecation warns when outdated
-            headers = self._shared_request_params.get('headers') or {}
-            headers.update({
-                'User-Agent': '%s %s - %s' % (
-                    kwargs.pop('client_name'),
-                    kwargs.pop('client_version', 'x.y.z'),
-                    kwargs.pop('app_name', 'unknown'),
-                )
-            })
+            headers = self._shared_request_params.setdefault('headers', {})
+            headers['User-Agent'] = '%s %s - %s' % (
+                kwargs.pop('client_name'),
+                kwargs.pop('client_version', 'x.y.z'),
+                kwargs.pop('app_name', 'unknown'),
+            )
             self._shared_request_params['headers'] = headers
 
     def _get_request_params(self, **kwargs):
@@ -108,4 +106,3 @@ class HTTPServiceClient(Session):
                 self.__class__.__name__, response.url, response.status_code,
                 response.content)
             raise HTTPServiceError(response)
-
