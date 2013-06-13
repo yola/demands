@@ -24,7 +24,7 @@ class HTTPServiceError(Exception):
 class HTTPServiceClient(Session):
     """Extendable base service client object"""
 
-    _VALID_REQUESTS_ARGS = inspect.getargspec(Session.request)[0]
+    _VALID_REQUEST_ARGS = inspect.getargspec(Session.request)[0]
 
     def __init__(self, url, **kwargs):
         super(HTTPServiceClient, self).__init__()
@@ -58,7 +58,7 @@ class HTTPServiceClient(Session):
     def _sanitize_request_params(self, request_params):
         """Remove keyword arguments not used by `requests`"""
         return dict((key, val) for key, val in request_params.items()
-                    if key in self._VALID_REQUESTS_ARGS)
+                    if key in self._VALID_REQUEST_ARGS)
 
     def request(self, method, path, **kwargs):
         """"Configure params. Send a <Request>. Demand and return a <Response>.
