@@ -88,12 +88,13 @@ class HTTPServiceClient(Session):
         response = self.post_send(response, request_params=request_params)
         return response
 
-    def pre_send(self, request_params):
+    def pre_send(self, request_params, **kwargs):
         """"Override this method to modify sent request parameters"""
         return request_params
 
-    def post_send(self, response, request_params={}):
+    def post_send(self, response, **kwargs):
         """"Override this method to modify returned response"""
+        request_params = kwargs.get('request_params', {})
         self._demand_success(response, request_params)
         return response
 
