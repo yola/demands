@@ -22,7 +22,7 @@ class Request(object):
     def _compose_request_arguments(self):
         arguments = self.arguments
         if self.method not in ('POST', 'PUT', 'PATCH'):
-            arguments['params'] = arguments.pop('data')
+            arguments['params'] = arguments.pop('data', {})
 
         arguments['auth'] = self.auth
 
