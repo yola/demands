@@ -12,24 +12,18 @@ class Request(object):
     http requests/responses.
     """
 
-    def __init__(self, url, method, data, headers, cookies, verify):
+    def __init__(self, url, method, **kwargs):
         self.url = url
         self.method = method
-        self.data = data or {}
-        self.cookies = cookies or {}
-        self.headers = headers or {}
-        self.verify = verify
+        self.arguments = kwargs
+        self.verify = kwargs.get('verify', True)
         self.auth = None
 
     def _compose_request_arguments(self):
-        arguments = {}
-        if self.method in ('POST', 'PUT', 'PATCH'):
-            arguments['data'] = self.data
-        else:
-            arguments['params'] = self.data
+        arguments = self.arguments
+        if self.method not in ('POST', 'PUT', 'PATCH'):
+            arguments['params'] = arguments.pop('data')
 
-        arguments['cookies'] = self.cookies
-        arguments['headers'] = self.headers
         arguments['auth'] = self.auth
 
         if self.url.startswith('https'):
@@ -117,7 +111,8 @@ class HTTPService(object):
         base = self.config.get('url')
         url = '/'.join([base.rstrip('/'), path.lstrip('/')])
 
-        request = Request(url, method, data, headers, cookies, self.config.get('verify_ssl', True))
+        kwargs.setdefault('verify', self.config.get('verify_ssl', True))
+        request = Request(url, method, **kwargs)
 
         self.pre_send(request, **kwargs)
         response = request.send()
