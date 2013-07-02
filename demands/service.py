@@ -97,19 +97,19 @@ class HTTPService(object):
 
             raise HTTPServiceError(response.status_code, response.content)
 
-    def get(self, path, data=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('GET', path, data, cookies, headers, **kwargs)
+    def get(self, path, **kwargs):
+        return self._make_call('GET', path, **kwargs)
 
-    def post(self, path, data=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('POST', path, data, cookies, headers, **kwargs)
+    def post(self, path, **kwargs):
+        return self._make_call('POST', path, **kwargs)
 
-    def put(self, path, data=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('PUT', path, data, cookies, headers, **kwargs)
+    def put(self, path, **kwargs):
+        return self._make_call('PUT', path, **kwargs)
 
-    def delete(self, path, data=None, cookies=None, headers=None, **kwargs):
-        return self._make_call('DELETE', path, data, cookies, headers, **kwargs)
+    def delete(self, path, **kwargs):
+        return self._make_call('DELETE', path, **kwargs)
 
-    def _make_call(self, method, path, data, headers, cookies, **kwargs):
+    def _make_call(self, method, path, **kwargs):
         """
         Call the service method defined by the passed path and http method.
         Additional arguments include cookies, headers, and data values.
