@@ -53,6 +53,31 @@ class RequestTests(PatchedRequestsTests):
         self.requests.post.assert_called_with(self.url, data=data, cookies=cookies, auth=None)
 
 
+class HttpServiceRequestTests(PatchedRequestsTests):
+    def test_request_is_sent_with_correct_headers(self):
+        url = 'http://localhost/'
+        path = 'path'
+        headers = {'its simple': 'we kill the batman'}
+        service = HTTPService({
+            'url': url,
+        })
+        service.get(path, headers=headers)
+        self.requests.get.assert_called_with(url + path, params={},
+                                             headers=headers, verify=True,
+                                             auth=None)
+
+    def test_request_is_sent_with_correct_cookies(self):
+        url = 'http://localhost/'
+        path = 'path'
+        cookies = {'its simple': 'we kill the batman'}
+        service = HTTPService({
+            'url': url,
+        })
+        service.get(path, cookies=cookies)
+        self.requests.get.assert_called_with(url + path, params={},
+                                             cookies=cookies, verify=True,
+                                             auth=None)
+
 class HttpServiceTests(unittest2.TestCase):
     def setUp(self):
         self.service = HTTPService({
