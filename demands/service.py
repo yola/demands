@@ -36,6 +36,9 @@ class Request(object):
         log.debug('Authentication via HTTP auth as "%s"', username)
         self.auth = (username, password)
 
+    def set_header(self, header, value):
+        self.arguments.setdefault('headers', {})[header] = value
+
     def send(self):
         """Execute the request, and return the response"""
         method = self.method.lower()
@@ -75,11 +78,11 @@ class HTTPService(object):
                 self.config['username'], self.config['password'])
 
         if 'client_name' in self.config:
-            request.headers['User-Agent'] = '%s %s - %s' % (
+            request.set_header('User-Agent', '%s %s - %s' % (
                 self.config['client_name'],
                 self.config.get('client_version', 'x.y.z'),
                 self.config.get('app_name', 'unknown'),
-            )
+            ))
 
     def post_send(self, request, response, **params):
         """Override to modify response object returned by call made by request object."""
