@@ -30,28 +30,27 @@ class RequestTests(PatchedRequestsTests):
         request = Request(url, 'POST')
         request.authenticate(username, password)
         request.send()
-        self.requests.post.assert_called_once_with(
-            url, headers={}, cookies={}, data={}, auth=(username, password), verify=True)
+        self.requests.post.assert_called_once_with(url, auth=(username, password),
+                                                   verify=True)
 
     def test_request_sends_proper_arguments_for_headers_cookies_and_data(self):
         # Simple request
         request = Request(self.url, 'POST')
         request.send()
-        self.requests.post.assert_called_with(self.url, headers={}, cookies={}, data={}, auth=None)
+        self.requests.post.assert_called_with(self.url, auth=None)
 
         # Request with headers
         headers = {'Content-Type': 'text/html'}
         request = Request(self.url, 'GET', headers=headers)
         request.send()
-        self.requests.get.assert_called_with(
-            self.url, headers=headers, cookies={}, params={}, auth=None)
+        self.requests.get.assert_called_with(self.url, headers=headers, auth=None)
 
         # Request with data and cookies
         data = {'robots': 1}
         cookies = {'cookie_name': 'cookie_value'}
         request = Request(self.url, 'POST', data=data, cookies=cookies)
         request.send()
-        self.requests.post.assert_called_with(self.url, data=data, headers={}, cookies=cookies, auth=None)
+        self.requests.post.assert_called_with(self.url, data=data, cookies=cookies, auth=None)
 
 
 class HttpServiceTests(unittest2.TestCase):
@@ -79,7 +78,8 @@ class HttpServiceTests(unittest2.TestCase):
             'app_name': 'my_app'
         })
         service.pre_send(self.request)
-        self.assertEqual(self.request.headers['User-Agent'], 'my_client 1.2.3 - my_app')
+        self.assertEqual(self.request.arguments['headers']['User-Agent'],
+                         'my_client 1.2.3 - my_app')
 
     def test_post_send_raises_exception_in_case_of_error(self):
         self.response.configure_mock(status_code=500, content='content')
