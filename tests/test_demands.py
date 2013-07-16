@@ -4,7 +4,7 @@ import inspect
 from requests import Session, Response
 from mock import Mock, patch
 
-from demands.models import HTTPServiceClient, HTTPServiceError
+from demands import HTTPServiceClient, HTTPServiceError
 
 
 class PatchedSessionTests(unittest2.TestCase):
@@ -12,7 +12,7 @@ class PatchedSessionTests(unittest2.TestCase):
         # must patch inspect since it is used on Session.request, and when
         # Session.request is mocked, inspect blows up
         self.request_args = inspect.getargspec(Session.request)
-        self.inspect_patcher = patch('demands.models.inspect.getargspec')
+        self.inspect_patcher = patch('demands.inspect.getargspec')
         self.patched_inspect = self.inspect_patcher.start()
         self.patched_inspect.return_value = self.request_args
 
@@ -66,16 +66,25 @@ class HttpServiceTests(PatchedSessionTests):
         self.request.assert_called_with(
             method='DELETE', url='http://service.com/delete-endpoint')
 
-    def test_sets_authentication_when_username_provided(self):
+    def test_sets_authentication_when_provided(self):
         service = HTTPServiceClient(
             url='http://localhost/',
-            username='foo',
-            password='bar',
+            auth=('foo', 'bar'),
         )
         service.get('/authed-endpoint')
         self.request.assert_called_with(
             method='GET', url='http://localhost/authed-endpoint',
             allow_redirects=True, auth=('foo', 'bar'))
+
+    @patch('demands.log')
+    def test_logs_authentication_when_provided(self, mock_log):
+        service = HTTPServiceClient(
+            url='http://localhost/',
+            auth=('foo', 'bar'),
+        )
+        service.get('/authed-endpoint')
+        debug_msgs = get_parsed_log_messages(mock_log, 'debug')
+        self.assertIn('Authentication', debug_msgs[0])
 
     def test_client_identification_adds_user_agent_header(self):
         """client identification adds User-Agent header"""
@@ -110,17 +119,17 @@ class HttpServiceTests(PatchedSessionTests):
         self.service.request(
             'METHOD', 'http://notfound/', expected_response_codes=(404,))
 
-    @patch('demands.models.log')
+    @patch('demands.log')
     def test_post_send_logs_errors(self, mock_log):
         """failed requests are logged with status code, and content"""
         self.response.configure_mock(
             status_code=500, content='content', url='http://service.com/')
         with self.assertRaises(HTTPServiceError):
             self.service.request('METHOD', 'http://service.com/')
-            error_msg = get_parsed_log_message(mock_log, 'error')
-            self.assertIn('service.com', error_msg)
-            self.assertIn('500', error_msg)
-            self.assertIn('content', error_msg)
+        error_msg = get_parsed_log_messages(mock_log, 'error')[0]
+        self.assertIn('service.com', error_msg)
+        self.assertIn('500', error_msg)
+        self.assertIn('content', error_msg)
 
     def test_santization_of_request_parameters_removes_unknowns(self):
         lots_of_params = {
@@ -133,7 +142,7 @@ class HttpServiceTests(PatchedSessionTests):
             {'method': 'METHOD'})
 
 
-def get_parsed_log_message(mock_log, log_level):
+def get_parsed_log_messages(mock_log, log_level):
     """Return the parsed log message sent to a mock log call at log_level
 
     Example:
@@ -149,8 +158,11 @@ def get_parsed_log_message(mock_log, log_level):
         # => 'Doing something with one and two'
 
     """
-    call_args = getattr(mock_log, log_level).call_args
-    if not call_args:
+    calls = getattr(mock_log, log_level).call_args_list
+    if not calls:
         raise Exception('%s.%s was not called' % (mock_log, log_level))
-    args, kwargs = call_args
-    return args[0] % tuple(args[1:])
+    messages = []
+    for call_args in calls:
+        args, kwargs = call_args
+        messages.append(args[0] % tuple(args[1:]))
+    return messages
