@@ -44,15 +44,12 @@ class HTTPServiceClient(Session):
             self._shared_request_params['headers'] = headers
 
     def _get_request_params(self, **kwargs):
-        """Return a copy of self._shared_request_params updated with kwargs"""
+        """Return a copy of self._shared_request_params and logs auth."""
         request_params = copy.deepcopy(self._shared_request_params)
-
-        if 'username' in kwargs:
-            username = kwargs.pop('username')
-            request_params['auth'] = (username, kwargs.pop('password', None))
-            log.debug('Authentication via HTTP auth as "%s"', username)
-
         request_params.update(kwargs)
+        if 'auth' in request_params and len(request_params['auth']):
+            log.debug('Authentication via HTTP auth as "%s"',
+                      request_params['auth'][0])
         return request_params
 
     def _sanitize_request_params(self, request_params):
