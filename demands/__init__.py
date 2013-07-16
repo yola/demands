@@ -1,3 +1,4 @@
+import collections
 import copy
 import inspect
 import json
@@ -32,8 +33,6 @@ class HTTPServiceClient(Session):
         self._shared_request_params = kwargs
 
         if 'client_name' in kwargs:
-            # client name and version is important because we want to
-            # accurately log errors and throw deprecation warns when outdated
             headers = self._shared_request_params.setdefault('headers', {})
             headers['User-Agent'] = '%s %s - %s' % (
                 kwargs.pop('client_name'),
@@ -42,25 +41,26 @@ class HTTPServiceClient(Session):
             )
             self._shared_request_params['headers'] = headers
 
+    def _get_request_params(self, **kwargs):
+        """Merge shared params and new params."""
+        request_params = copy.deepcopy(self._shared_request_params)
+        for key, val in request_params.iteritems():
+            # ensure we don't lose dict values like headers or cookies
+            if key in kwargs and isinstance(val, collections.Mapping):
+                kwargs[key].update(val)
+        request_params.update(kwargs)
+        return request_params
+
     def _sanitize_request_params(self, request_params):
         """Remove keyword arguments not used by `requests`"""
         return dict((key, val) for key, val in request_params.items()
                     if key in self._VALID_REQUEST_ARGS)
 
     def request(self, method, path, **kwargs):
-        """"Configure params. Send a <Request>. Demand and return a <Response>.
-
-        In addition to parameters allowed by `request` there are:
-        :param expected_response_codes: workaround for services which returns
-            non-expected results, like we search for users - and expect []
-            in case nobody is found, but got 404 instead.
-        :param username: enables authenticated requests
-        :param password: used in conjunction with username
-
-        """
+        """"Sends a <Request> and demand a <Response>."""
         url = urljoin(self.url, path)
-        request_params = copy.deepcopy(self._shared_request_params)
-        request_params.update(url=url, method=method, **kwargs)
+        request_params = self._get_request_params(method=method,
+                                                  url=url, **kwargs)
         request_params = self.pre_send(request_params)
 
         sanitized_params = self._sanitize_request_params(request_params)
@@ -80,9 +80,17 @@ class HTTPServiceClient(Session):
         response = self.post_send(response, **request_params)
         return response
 
+    def _format_json_request(self, request_params):
+        if request_params.get('send_as_json') and request_params.get('data'):
+            request_params['data'] = json.dumps(request_params['data'])
+            headrs = request_params.get('headers', {})
+            headrs.setdefault('Content-Type', 'application/json;charset=utf-8')
+            request_params['headers'] = headrs
+        return request_params
+
     def pre_send(self, request_params):
         """"Override this method to modify sent request parameters"""
-        return request_params
+        return self._format_json_request(request_params)
 
     def post_send(self, response, **kwargs):
         """"Override this method to modify returned response"""
