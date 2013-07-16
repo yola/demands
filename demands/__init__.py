@@ -23,7 +23,24 @@ class HTTPServiceError(Exception):
 
 
 class HTTPServiceClient(Session):
-    """Extendable base service client object"""
+    """Extendable base service client object.
+
+    Client can be configured with any param allowed by the requests API.  These
+    params will be uses with each and every request and can be overridden with
+    kwargs.  `demands` adds the following params:
+
+    :param expected_response_codes: (optional) Workaround for services which
+        returns non-expected results, example: when search for users, and
+        expect [] for when nobody is found, yet a 404 is returned.
+    :param send_as_json: (optional) Encodes request data as json and sets
+        'Content-Type' header.
+    :param client_name: (optional) Sets the User-Agent header.  Important
+        because we want to accurately log errors and throw deprecation
+        warnings when clients are outdated
+    :param client_version: (optional) Used with client_name
+    :param app_name: (optional) Used with client_name
+
+    """
 
     _VALID_REQUEST_ARGS = inspect.getargspec(Session.request)[0]
 
