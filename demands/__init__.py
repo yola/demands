@@ -29,8 +29,7 @@ class HTTPServiceClient(Session):
     def __init__(self, url, **kwargs):
         super(HTTPServiceClient, self).__init__()
         self.url = url
-        self._shared_request_params = {}
-        self._shared_request_params = self._get_request_params(**kwargs)
+        self._shared_request_params = kwargs
 
         if 'client_name' in kwargs:
             # client name and version is important because we want to
@@ -42,15 +41,6 @@ class HTTPServiceClient(Session):
                 kwargs.pop('app_name', 'unknown'),
             )
             self._shared_request_params['headers'] = headers
-
-    def _get_request_params(self, **kwargs):
-        """Return a copy of self._shared_request_params and logs auth."""
-        request_params = copy.deepcopy(self._shared_request_params)
-        request_params.update(kwargs)
-        if 'auth' in request_params and len(request_params['auth']):
-            log.debug('Authentication via HTTP auth as "%s"',
-                      request_params['auth'][0])
-        return request_params
 
     def _sanitize_request_params(self, request_params):
         """Remove keyword arguments not used by `requests`"""
@@ -69,18 +59,23 @@ class HTTPServiceClient(Session):
 
         """
         url = urljoin(self.url, path)
-        request_params = self._get_request_params(
-            url=url, method=method, **kwargs)
+        request_params = copy.deepcopy(self._shared_request_params)
+        request_params.update(url=url, method=method, **kwargs)
         request_params = self.pre_send(request_params)
 
         sanitized_params = self._sanitize_request_params(request_params)
         start_time = time.time()
         response = super(HTTPServiceClient, self).request(**sanitized_params)
+
+        # Log request and params (without passwords)
         log.debug(
             '%s HTTP [%s] call to "%s" %.2fms',
             response.status_code, method, response.url,
             (time.time() - start_time) * 1000)
-        log.debug('HTTP request params: %s', request_params)
+        auth = sanitized_params.pop('auth', None)
+        log.debug('HTTP request params: %s', sanitized_params)
+        if auth and len(auth):
+            log.debug('Authentication via HTTP auth as "%s"', auth[0])
 
         response = self.post_send(response, **request_params)
         return response

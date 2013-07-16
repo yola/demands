@@ -84,7 +84,7 @@ class HttpServiceTests(PatchedSessionTests):
         )
         service.get('/authed-endpoint')
         debug_msgs = get_parsed_log_messages(mock_log, 'debug')
-        self.assertIn('Authentication', debug_msgs[0])
+        self.assertIn('Authentication', debug_msgs[2])
 
     def test_client_identification_adds_user_agent_header(self):
         """client identification adds User-Agent header"""
