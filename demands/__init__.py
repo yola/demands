@@ -80,7 +80,7 @@ class HTTPServiceClient(Session):
         response = self.post_send(response, **request_params)
         return response
 
-    def pre_send(self, request_params, **kwargs):
+    def pre_send(self, request_params):
         """"Override this method to modify sent request parameters"""
         return request_params
 
