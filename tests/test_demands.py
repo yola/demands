@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest2
 import inspect
 
@@ -75,6 +76,17 @@ class HttpServiceTests(PatchedSessionTests):
         self.request.assert_called_with(
             method='GET', url='http://localhost/authed-endpoint',
             allow_redirects=True, auth=('foo', 'bar'))
+
+    def test_json_requests_have_formatted_data(self):
+        self.service.post(
+            '/data-endpoint', send_as_json=True,
+            data={'back': 'forth', 'forever': True, 'snowman-quote': '"☃"'})
+        data = self.request.call_args[1]['data']
+        self.assertIn('"snowman-quote": "\\"\\u2603\\""', data)
+        self.assertIn('"forever": true', data)
+        self.assertEqual(
+            self.request.call_args[1]['headers']['Content-Type'],
+            'application/json;charset=utf-8')
 
     @patch('demands.log')
     def test_logs_authentication_when_provided(self, mock_log):
