@@ -33,13 +33,12 @@ class HTTPServiceClient(Session):
         self._shared_request_params = kwargs
 
         if 'client_name' in kwargs:
-            headers = self._shared_request_params.setdefault('headers', {})
-            headers['User-Agent'] = '%s %s - %s' % (
-                kwargs.pop('client_name'),
-                kwargs.pop('client_version', 'x.y.z'),
-                kwargs.pop('app_name', 'unknown'),
-            )
-            self._shared_request_params['headers'] = headers
+            user_agent = '%s %s - %s' % (
+                kwargs.get('client_name'),
+                kwargs.get('client_version', 'x.y.z'),
+                kwargs.get('app_name', 'unknown'),)
+            self._shared_request_params.setdefault('headers', {})
+            self._shared_request_params['headers']['User-Agent'] = user_agent
 
     def _get_request_params(self, **kwargs):
         """Merge shared params and new params."""
