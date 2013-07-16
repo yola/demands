@@ -1,11 +1,11 @@
+import copy
+import inspect
+import json
 import logging
 import time
-import inspect
-import copy
 
-from urlparse import urljoin
 from requests import Session
-
+from urlparse import urljoin
 
 log = logging.getLogger(__name__)
 
