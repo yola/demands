@@ -89,7 +89,7 @@ class HTTPServiceClient(Session):
             (time.time() - start_time) * 1000)
         auth = sanitized_params.pop('auth', None)
         log.debug('HTTP request params: %s', sanitized_params)
-        if auth and len(auth):
+        if auth:
             log.debug('Authentication via HTTP auth as "%s"', auth[0])
 
         response = self.post_send(response, **request_params)
@@ -98,9 +98,8 @@ class HTTPServiceClient(Session):
     def _format_json_request(self, request_params):
         if request_params.get('send_as_json') and request_params.get('data'):
             request_params['data'] = json.dumps(request_params['data'])
-            headrs = request_params.get('headers', {})
-            headrs.setdefault('Content-Type', 'application/json;charset=utf-8')
-            request_params['headers'] = headrs
+            request_params.setdefault('headers', {})['Content-Type'] = (
+                'application/json;charset=utf-8')
         return request_params
 
     def pre_send(self, request_params):
