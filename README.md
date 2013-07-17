@@ -1,33 +1,54 @@
-# demands
+# Demands
 
-demands is a base HTTP service client class on top of [requests][2].
+A base HTTP service client.
 
 By default it "demands" successful responses from API endpoints,
 otherwise it raises an exception.
 
+Demands accepts all the same parameters as `requests.request` and extends
+the `requests.Session` class, documentation for both:
+[Requests Developer Interface][2].
+
 Written and used by the folks at Yola to support our [free website builder][1].
 
-## Overview
+## HTTPService Overview
 
-- HTTPService - base class for creating service clients, provides flexible way of http error handling
-for descendants.  Supports pre- and post-send hooks.
-- Request - container for request related data
-- HTTPServiceError - exception raised on unexpected service response
+* base class for creating service clients
+* provides flexible way of http error handling for descendants
+* `HTTPServiceError` raised on unexpected service response
+* Supports pre- and post-send hooks
+
 
 ## Usage
-```python
-from demands import HTTPService
 
-class DummyService(HTTPService):
-    def get_user(self, user_id):
-        url = 'http://localhost/users/%s/' % user_id
-        return self.get(url).json
+    from demands import HTTPService
 
-    def safe_get_user(self, user_id, default_user):
-        url = 'http://localhost/users/%s/' % user_id
-        response = self.get(url, expected_response_codes=[404])
-        return response.json if response.is_ok else default_user
-```
+    class MyService(HTTPService):
+        def get_user(self, user_id):
+            return self.get('/users/%s/' % user_id).json
+
+        def safe_get_user(self, user_id, default_user):
+            response = self.get(
+                '/users/%s/' % user_id, 
+                expected_response_codes=[404])
+            return response.json if response.is_ok else default_user
+    
+    
+    service = MyService(url='http://localhost/')
+    user = service.get_user(1234)
+
+And any parameters passed to init will also be used for each and every
+request:
+
+    service = MyService(
+        url='http://localhost/',
+        headers={'h1':'value'},
+        auth=('username','pass'),
+    )
+    
+    # sent with auth and both headers
+    user = service.get('/some-path', headers={'h2': 'kittens'})
+
 
 ## Testing
 
@@ -40,4 +61,5 @@ Run the tests with:
     nosetests
 
 [1]:https://www.yola.com/
-[2]:https://github.com/kennethreitz/requests
+[2]:http://www.python-requests.org/en/latest/api/
+[3]:https://github.com/kennethreitz/requests
