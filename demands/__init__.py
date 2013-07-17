@@ -38,6 +38,7 @@ class HTTPServiceClient(Session):
         warnings when clients are outdated
     :param client_version: (optional) Used with client_name
     :param app_name: (optional) Used with client_name
+    :param cookies: (optional) Dict only, CookieJar not supported
 
     """
 
@@ -72,7 +73,7 @@ class HTTPServiceClient(Session):
                     if key in self._VALID_REQUEST_ARGS)
 
     def request(self, method, path, **kwargs):
-        """"Sends a <Request> and demand a <Response>."""
+        """Sends a <Request> and demands a <Response>."""
         url = urljoin(self.url, path)
         request_params = self._get_request_params(method=method,
                                                   url=url, **kwargs)
@@ -103,11 +104,11 @@ class HTTPServiceClient(Session):
         return request_params
 
     def pre_send(self, request_params):
-        """"Override this method to modify sent request parameters"""
+        """Override this method to modify sent request parameters"""
         return self._format_json_request(request_params)
 
     def post_send(self, response, **kwargs):
-        """"Override this method to modify returned response"""
+        """Override this method to modify returned response"""
         self._demand_success(response, kwargs)
         return response
 
