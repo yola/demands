@@ -67,6 +67,21 @@ class HttpServiceTests(PatchedSessionTests):
         self.request.assert_called_with(
             method='DELETE', url='http://service.com/delete-endpoint')
 
+    def test_headers_are_passed_and_overridable(self):
+        service = HTTPServiceClient(
+            url='http://localhost/',
+            headers={
+                'name': 'value',
+                'thomas': 'kittens'})
+        service.get('/')
+        self.request.assert_called_with(
+            headers={'thomas': 'kittens', 'name': 'value'},
+            method='GET', url='http://localhost/', allow_redirects=True)
+        service.get('/', headers={'thomas': 'homegirl'})
+        self.request.assert_called_with(
+            headers={'thomas': 'homegirl', 'name': 'value'},
+            method='GET', url='http://localhost/', allow_redirects=True)
+
     def test_sets_authentication_when_provided(self):
         service = HTTPServiceClient(
             url='http://localhost/',

@@ -1,4 +1,3 @@
-import collections
 import copy
 import inspect
 import json
@@ -23,7 +22,7 @@ class HTTPServiceError(Exception):
 
 
 class HTTPServiceClient(Session):
-    """Extendable base service client object.
+    """Extendable base service client.
 
     Client can be configured with any param allowed by the requests API.  These
     params will be uses with each and every request and can be overridden with
@@ -59,11 +58,12 @@ class HTTPServiceClient(Session):
     def _get_request_params(self, **kwargs):
         """Merge shared params and new params."""
         request_params = copy.deepcopy(self._shared_request_params)
-        for key, val in request_params.iteritems():
-            # ensure we don't lose dict values like headers or cookies
-            if key in kwargs and isinstance(val, collections.Mapping):
-                kwargs[key].update(val)
-        request_params.update(kwargs)
+        for key, value in kwargs.iteritems():
+            if isinstance(value, dict) and key in request_params:
+                # ensure we don't lose dict values like headers or cookies
+                request_params[key].update(value)
+            else:
+                request_params[key] = value
         return request_params
 
     def _sanitize_request_params(self, request_params):
