@@ -1,6 +1,9 @@
 # Changelog
 
-## 1.0.0
+## [1.0.1](https://github.com/yola/demands/releases/tag/1.0.1)
+* Fixes issue with composing url
+
+## [1.0.0](https://github.com/yola/demands/releases/tag/1.0.0)
 * HTTPServiceClient invoked with arguments instead of a dictionary
 * Enable and match parameters used by `requests`
 
@@ -13,16 +16,15 @@
     * `data`: dictionary, bytes, or file-like object to send in the body
     * `verify`: verify the SSL cert
 
-
-## 0.2.1
+## [0.2.1](https://github.com/yola/demands/releases/tag/0.2.1)
 * Save error response content in HTTPServiceError exception
 
-## 0.2.0
+## [0.2.0](https://github.com/yola/demands/releases/tag/0.2.0)
 * Switches to requests > 1.0.0
 
-## 0.1.0
+## [0.1.0](https://github.com/yola/demands/releases/tag/0.1.0)
 * Adds client identification
 * Provides an easier way to modify request arguments in pre_send()
 
-## 0.0.1
+## [0.0.1](https://github.com/yola/demands/releases/tag/0.0.1)
 * Initial version
