@@ -168,6 +168,14 @@ class HttpServiceTests(PatchedSessionTests):
             self.service._sanitize_request_params(lots_of_params),
             {'method': 'METHOD'})
 
+    def test_url_is_composed_properly(self):
+        service = HTTPServiceClient('http://service.com/some/path/')
+        service.get('/get-endpoint')
+        self.request.assert_called_with(
+            method='GET', url='http://service.com/some/path/get-endpoint',
+            allow_redirects=True
+        )
+
 
 def get_parsed_log_messages(mock_log, log_level):
     """Return the parsed log message sent to a mock log call at log_level

@@ -5,7 +5,6 @@ import logging
 import time
 
 from requests import Session
-from urlparse import urljoin
 
 log = logging.getLogger(__name__)
 
@@ -74,7 +73,7 @@ class HTTPServiceClient(Session):
 
     def request(self, method, path, **kwargs):
         """Sends a <Request> and demands a <Response>."""
-        url = urljoin(self.url, path)
+        url = '%s/%s' % (self.url.rstrip('/'), path.lstrip('/'))
         request_params = self._get_request_params(method=method,
                                                   url=url, **kwargs)
         request_params = self.pre_send(request_params)
