@@ -62,6 +62,12 @@ Run the tests with:
 
     nosetests
 
+## API documentation
+
+To generate the documentation:
+
+    cd docs && PYTHONPATH=.. make singlehtml
+
 [1]:https://www.yola.com/
 [2]:http://www.python-requests.org/en/latest/api/
 [3]:https://github.com/kennethreitz/requests
