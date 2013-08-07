@@ -43,14 +43,15 @@ user = service.get_user(1234)
 And any parameters passed to init will also be used for each and every
 request:
 ```python
-    service = MyService(
-        url='http://localhost/',
-        headers={'h1':'value'},
         auth=('username','pass'),
-    )
-    
-    # sent with auth and both headers
-    user = service.get('/some-path', headers={'h2': 'kittens'})
+service = MyService(
+    url='http://localhost/',
+    headers={'h1':'value'},
+    auth=('username','pass'),
+)
+
+# sent with auth and both headers
+user = service.get('/some-path', headers={'h2': 'kittens'})
 ```
 
 
