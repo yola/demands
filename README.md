@@ -1,5 +1,7 @@
 # Demands
 
+[![Build Status](https://travis-ci.org/yola/demands.png)](https://travis-ci.org/yola/demands)
+
 A base HTTP service client.
 
 By default it "demands" successful responses from API endpoints,
