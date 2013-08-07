@@ -20,26 +20,27 @@ Written and used by the folks at Yola to support our [free website builder][1].
 
 
 ## Usage
+```python
+from demands import HTTPService
 
-    from demands import HTTPService
+class MyService(HTTPService):
+    def get_user(self, user_id):
+        return self.get('/users/%s/' % user_id).json
 
-    class MyService(HTTPService):
-        def get_user(self, user_id):
-            return self.get('/users/%s/' % user_id).json
+    def safe_get_user(self, user_id, default_user):
+        response = self.get(
+            '/users/%s/' % user_id, 
+            expected_response_codes=[404])
+        return response.json if response.is_ok else default_user
 
-        def safe_get_user(self, user_id, default_user):
-            response = self.get(
-                '/users/%s/' % user_id, 
-                expected_response_codes=[404])
-            return response.json if response.is_ok else default_user
-    
-    
-    service = MyService(url='http://localhost/')
-    user = service.get_user(1234)
+
+service = MyService(url='http://localhost/')
+user = service.get_user(1234)
+```
 
 And any parameters passed to init will also be used for each and every
 request:
-
+```python
     service = MyService(
         url='http://localhost/',
         headers={'h1':'value'},
@@ -48,6 +49,7 @@ request:
     
     # sent with auth and both headers
     user = service.get('/some-path', headers={'h2': 'kittens'})
+```
 
 
 ## Testing
