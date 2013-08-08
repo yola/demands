@@ -18,8 +18,8 @@ Written and used by the folks at Yola to support our [free website builder][1].
 * base class for creating service clients
 * provides flexible way of http error handling for descendants
 * `HTTPServiceError` raised on unexpected service response
-* Supports pre- and post-send hooks
 
+* Supports pre-send and post-send hooks
 
 ## Usage
 ```python
@@ -40,10 +40,9 @@ service = MyService(url='http://localhost/')
 user = service.get_user(1234)
 ```
 
-And any parameters passed to init will also be used for each and every
-request:
+Any parameters passed to the constructor will also be used for 
+each and every request:
 ```python
-        auth=('username','pass'),
 service = MyService(
     url='http://localhost/',
     headers={'h1':'value'},
