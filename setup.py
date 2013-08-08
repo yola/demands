@@ -7,6 +7,7 @@ setup(
     description=demands.__doc__, 
     author='Yola',
     author_email='engineers@yola.com',
+    license='MIT (Expat)',
     url=demands.__url__,
     packages=['demands'],
     install_requires=['requests >= 1.0.0, < 2.0.0']
