@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.0.2](https://github.com/yola/demands/releases/tag/1.0.2)
+* Adds API documentation
+* Add a license
+
 ## [1.0.1](https://github.com/yola/demands/releases/tag/1.0.1)
 * Fixes issue with composing url
 
