@@ -102,9 +102,13 @@ class HTTPServiceClient(Session):
 
     def _format_json_request(self, request_params):
         if request_params.get('send_as_json') and request_params.get('data'):
-            request_params['data'] = json.dumps(request_params['data'])
+            request_params['data'] = json.dumps(
+                request_params['data'],
+                default=str
+            )
             request_params.setdefault('headers', {})['Content-Type'] = (
-                'application/json;charset=utf-8')
+                'application/json;charset=utf-8'
+            )
         return request_params
 
     def pre_send(self, request_params):
