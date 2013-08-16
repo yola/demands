@@ -9,13 +9,13 @@ from requests import Session
 log = logging.getLogger(__name__)
 
 
-class HTTPServiceError(IOError):
+class HTTPServiceError(AssertionError):
     def __init__(self, response):
         try:
             self.details = response.json()
         except ValueError:
             self.details = response.content
-        super(IOError, self).__init__(
+        super(AssertionError, self).__init__(
             'code: %s, details: %s' % (response.status_code, self.details)
         )
 
