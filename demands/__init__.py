@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 
 class HTTPServiceError(AssertionError):
     def __init__(self, response):
+        self.response = respose
         try:
             self.details = response.json()
         except ValueError:
