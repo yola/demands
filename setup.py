@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='demands',
-    version='1.0.1',
+    version='1.0.4',
     description='Base HTTP service client',
     author='Yola',
     author_email='engineers@yola.com',
