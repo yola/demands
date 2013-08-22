@@ -1,3 +1,8 @@
+"""Base HTTP service client"""
+
+__version__ = '1.0.3'
+__url__ = 'https://github.com/yola/demands'
+
 import copy
 import inspect
 import json
@@ -24,7 +29,7 @@ class HTTPServiceError(AssertionError):
 class HTTPServiceClient(Session):
     """Extendable base service client.
 
-    Client can be configured with any param allowed by the requests API.  These
+    Client can be configured with any param allowed by the requests API. These
     params will be uses with each and every request and can be overridden with
     kwargs.  `demands` adds the following params:
 
@@ -39,7 +44,6 @@ class HTTPServiceClient(Session):
     :param client_version: (optional) Used with client_name
     :param app_name: (optional) Used with client_name
     :param cookies: (optional) Dict only, CookieJar not supported
-
     """
 
     _VALID_REQUEST_ARGS = inspect.getargspec(Session.request)[0]
@@ -73,7 +77,8 @@ class HTTPServiceClient(Session):
                     if key in self._VALID_REQUEST_ARGS)
 
     def request(self, method, path, **kwargs):
-        """Sends a <Request> and demands a <Response>."""
+        """Sends a :class:`requests.Request` and demands
+           a :class:`requests.Response`."""
         url = '%s/%s' % (self.url.rstrip('/'), path.lstrip('/'))
         request_params = self._get_request_params(method=method,
                                                   url=url, **kwargs)
@@ -98,9 +103,13 @@ class HTTPServiceClient(Session):
 
     def _format_json_request(self, request_params):
         if request_params.get('send_as_json') and request_params.get('data'):
-            request_params['data'] = json.dumps(request_params['data'])
+            request_params['data'] = json.dumps(
+                request_params['data'],
+                default=str
+            )
             request_params.setdefault('headers', {})['Content-Type'] = (
-                'application/json;charset=utf-8')
+                'application/json;charset=utf-8'
+            )
         return request_params
 
     def pre_send(self, request_params):
