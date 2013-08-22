@@ -168,6 +168,16 @@ class HttpServiceTests(PatchedSessionTests):
             self.service._sanitize_request_params(lots_of_params),
             {'method': 'METHOD'})
 
+    def test_santization_of_verify_parameters(self):
+        lots_of_params = {
+            'expected_response_codes': (404,),
+            'method': 'METHOD',
+            'verify_ssl': '/some/path',
+        }
+        self.assertEqual(
+            self.service._sanitize_request_params(lots_of_params),
+            {'method': 'METHOD', 'verify': '/some/path'})
+
     def test_url_is_composed_properly(self):
         service = HTTPServiceClient('http://service.com/some/path/')
         service.get('/get-endpoint')
