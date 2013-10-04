@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.0.4
+
+* Accept param `verify_ssl` as an alias for `verify`
+* Fix easy_install error, a pitfall of using `__init__.py`
+
 ## 1.0.3
 
 * Adds API documentation
