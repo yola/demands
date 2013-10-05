@@ -4,8 +4,8 @@ exec(open('demands/__meta__.py').read())
 
 setup(
     name='demands',
-    version='1.0.4',
-    description='Base HTTP service client',
+    version=__version__,
+    description=__doc__,
     author='Yola',
     author_email='engineers@yola.com',
     license='MIT (Expat)',
