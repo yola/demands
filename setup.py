@@ -4,7 +4,7 @@ exec(open('demands/__meta__.py').read())
 
 setup(
     name='demands',
-    version=__version__,
+    version=__version__,  # NOQA
     description=__doc__,
     author='Yola',
     author_email='engineers@yola.com',
