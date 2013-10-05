@@ -6,6 +6,8 @@ import time
 
 from requests import Session
 
+from __meta__ import __doc__, __url__, __version__  # NOQA
+
 log = logging.getLogger(__name__)
 
 

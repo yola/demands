@@ -1,5 +1,7 @@
 from setuptools import setup
 
+exec(open('demands/__meta__.py').read())
+
 setup(
     name='demands',
     version='1.0.4',

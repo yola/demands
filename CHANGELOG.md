@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.0.5
+
+* Restore module metadata via `__meta__.py`
+
 ## 1.0.4
 
 * Accept param `verify_ssl` as an alias for `verify`
