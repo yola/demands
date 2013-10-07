@@ -1,15 +1,18 @@
+import re
+
 from setuptools import setup
 
-exec(open('demands/__meta__.py').read())
+init_py = open('demands/__init__.py').read()
+metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", init_py))
 
 setup(
     name='demands',
-    version=__version__,  # NOQA
-    description=__doc__,
+    version=metadata['version'],
+    description=metadata['doc'],
     author='Yola',
     author_email='engineers@yola.com',
     license='MIT (Expat)',
-    url='https://github.com/yola/demands',
+    url=metadata['url'],
     packages=['demands'],
     install_requires=['requests >= 1.0.0, < 2.0.0']
 )

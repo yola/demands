@@ -1,3 +1,7 @@
+__doc__ = 'Base HTTP service client'
+__version__ = '1.0.5'
+__url__ = 'https://github.com/yola/demands'
+
 import copy
 import inspect
 import json
@@ -5,8 +9,6 @@ import logging
 import time
 
 from requests import Session
-
-from __meta__ import __doc__, __url__, __version__  # NOQA
 
 log = logging.getLogger(__name__)
 
