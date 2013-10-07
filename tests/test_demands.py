@@ -186,6 +186,16 @@ class HttpServiceTests(PatchedSessionTests):
             allow_redirects=True
         )
 
+    def test_pre_send_sets_max_retries(self):
+        self.service.pre_send({'max_retries': 2})
+        for adapter in self.service.adapters.itervalues():
+            self.assertEqual(adapter.max_retries, 2)
+
+    def test_pre_send_defaults_max_retries_to_zero(self):
+        self.service.pre_send({'max_retries': 2})
+        self.service.pre_send({})
+        for adapter in self.service.adapters.itervalues():
+            self.assertEqual(adapter.max_retries, 0)
 
 def get_parsed_log_messages(mock_log, log_level):
     """Return the parsed log message sent to a mock log call at log_level
