@@ -1,13 +1,18 @@
+import re
+
 from setuptools import setup
+
+init_py = open('demands/__init__.py').read()
+metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", init_py))
 
 setup(
     name='demands',
-    version='1.0.5',
-    description='Base HTTP service client',
+    version=metadata['version'],
+    description=metadata['doc'],
     author='Yola',
     author_email='engineers@yola.com',
     license='MIT (Expat)',
-    url='https://github.com/yola/demands',
+    url=metadata['url'],
     packages=['demands'],
     install_requires=['requests >= 1.0.0, < 2.0.0']
 )
