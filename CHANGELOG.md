@@ -2,7 +2,8 @@
 
 ## 1.0.5
 
-* Restore module metadata via `__meta__.py`
+* Allows to set max retries
+* Restore module metadata via `__init__.py`
 
 ## 1.0.4
 

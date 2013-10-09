@@ -72,7 +72,7 @@ class HTTPServiceClient(Session):
 
     def _sanitize_request_params(self, request_params):
         """Remove keyword arguments not used by `requests`"""
-        if request_params.has_key('verify_ssl'):
+        if 'verify_ssl' in request_params:
             request_params['verify'] = request_params.pop('verify_ssl')
         return dict((key, val) for key, val in request_params.items()
                     if key in self._VALID_REQUEST_ARGS)
@@ -115,6 +115,8 @@ class HTTPServiceClient(Session):
 
     def pre_send(self, request_params):
         """Override this method to modify sent request parameters"""
+        for adapter in self.adapters.itervalues():
+            adapter.max_retries = request_params.get('max_retries', 0)
         return self._format_json_request(request_params)
 
     def post_send(self, response, **kwargs):
