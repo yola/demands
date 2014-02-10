@@ -1,6 +1,7 @@
 # Demands
 
 [![Build Status](https://travis-ci.org/yola/demands.png)](https://travis-ci.org/yola/demands)
+[![Coverage Status](https://coveralls.io/repos/yola/demands/badge.png?branch=master)](https://coveralls.io/r/yola/demands?branch=master)
 
 A base HTTP service client.
 
