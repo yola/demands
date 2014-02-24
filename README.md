@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/yola/demands.png)](https://travis-ci.org/yola/demands)
 [![Coverage Status](https://coveralls.io/repos/yola/demands/badge.png?branch=master)](https://coveralls.io/r/yola/demands?branch=master)
+[![Latest Version](https://pypip.in/v/demands/badge.png)](https://pypi.python.org/pypi/demands/)
+[![Downloads](https://pypip.in/d/demands/badge.png)](https://pypi.python.org/pypi/demands/)
 
 A base HTTP service client.
 
