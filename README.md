@@ -16,7 +16,7 @@ the `requests.Session` class, documentation for both:
 
 Written and used by the folks at Yola to support our [free website builder][1].
 
-## HTTPService Overview
+## HTTPServiceClient Overview
 
 * base class for creating service clients
 * provides flexible way of http error handling for descendants
@@ -26,9 +26,9 @@ Written and used by the folks at Yola to support our [free website builder][1].
 
 ## Usage
 ```python
-from demands import HTTPService
+from demands import HTTPServiceClient
 
-class MyService(HTTPService):
+class MyService(HTTPServiceClient):
     def get_user(self, user_id):
         return self.get('/users/%s/' % user_id).json
 
