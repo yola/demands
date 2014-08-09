@@ -36,7 +36,7 @@ class MyService(HTTPServiceClient):
         response = self.get(
             '/users/%s/' % user_id, 
             expected_response_codes=[404])
-        return response.json() if response.is_ok else default_user()
+        return response.json() if response.is_ok else default_user
 
 
 service = MyService(url='http://localhost/')
