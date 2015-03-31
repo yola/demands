@@ -53,7 +53,8 @@ class HttpServiceTests(PatchedSessionTests):
         """minimal POST request"""
         self.service.post('/post-endpoint')
         self.request.assert_called_with(
-            method='POST', url='http://service.com/post-endpoint', data=None)
+            method='POST', url='http://service.com/post-endpoint', json=None,
+            data=None)
 
     def test_minimal_put_request(self):
         """minimal PUT request"""
