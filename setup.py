@@ -14,5 +14,5 @@ setup(
     license='MIT (Expat)',
     url=metadata['url'],
     packages=['demands'],
-    install_requires=['requests >= 1.0.0, < 2.0.0']
+    install_requires=['requests >= 2.4.2, < 3.0.0']
 )

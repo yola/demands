@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.0.6
+
+* Switch to version `requests` >= `2.4.2`
+
 ## 1.0.5
 
 * Allows to set max retries

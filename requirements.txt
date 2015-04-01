@@ -4,7 +4,7 @@ mock < 2.0.0
 nose < 2.0.0
 pinocchio < 1.0.0
 python-coveralls < 3.0.0
-requests >= 1.0.0, < 2.0.0
+requests >= 2.4.2, < 3.0.0
 sphinx-bootstrap-theme < 1.0.0
 sphinxcontrib-httpdomain < 2.0.0
 testtube < 1.0.0
