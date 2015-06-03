@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.0.7
+
+* Use fixed "Accept" header - "application/json"
+
 ## 1.0.6
 
 * Switch to version `requests` >= `2.4.2`

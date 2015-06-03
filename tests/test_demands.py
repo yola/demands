@@ -126,7 +126,8 @@ class HttpServiceTests(PatchedSessionTests):
         service.get('/test')
         self.request.assert_called_with(
             method='GET', url='http://localhost/test', allow_redirects=True,
-            headers={'User-Agent': 'my_client 1.2.3 - my_app', 'Foo': 'Bar'})
+            headers={'User-Agent': 'my_client 1.2.3 - my_app', 'Foo': 'Bar',
+                     'Accept': 'application/json'})
 
     def test_post_send_raise_exception_in_case_of_error(self):
         self.response.configure_mock(url='http://broken/', status_code=500)
