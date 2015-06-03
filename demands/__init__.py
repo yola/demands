@@ -1,5 +1,5 @@
 __doc__ = 'Base HTTP service client'
-__version__ = '1.0.6'
+__version__ = '1.0.7'
 __url__ = 'https://github.com/yola/demands'
 
 import copy
@@ -57,6 +57,7 @@ class HTTPServiceClient(Session):
                 kwargs.get('client_name'),
                 kwargs.get('client_version', 'x.y.z'),
                 kwargs.get('app_name', 'unknown'),)
+            kwargs['headers']['Accept'] = 'application/json'
         self._shared_request_params = kwargs
 
     def _get_request_params(self, **kwargs):
