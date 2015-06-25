@@ -88,7 +88,7 @@ To generate the documentation:
    :target: https://travis-ci.org/yola/demands
 .. |Coverage Status| image:: https://coveralls.io/repos/yola/demands/badge.png?branch=master
    :target: https://coveralls.io/r/yola/demands?branch=master
-.. |Latest Version| image:: https://pypip.in/v/demands/badge.png
+.. |Latest Version| image:: https://img.shields.io/pypi/v/demands.svg
    :target: https://pypi.python.org/pypi/demands/
-.. |Downloads| image:: https://pypip.in/d/demands/badge.png
+.. |Downloads| image:: https://img.shields.io/pypi/dm/demands.svg
    :target: https://pypi.python.org/pypi/demands/
