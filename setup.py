@@ -3,7 +3,7 @@ import re
 from setuptools import setup
 
 with open('demands/__init__.py') as init_py:
-	metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", init_py.read()))
+    metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", init_py.read()))
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
