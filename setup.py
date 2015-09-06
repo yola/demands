@@ -18,5 +18,9 @@ setup(
     license='MIT (Expat)',
     url=metadata['url'],
     packages=['demands'],
-    install_requires=['requests >= 2.4.2, < 3.0.0']
+    install_requires=[
+        'requests >= 2.4.2, < 3.0.0',
+        'six',
+    ],
+    test_suite='nose.collector',
 )
