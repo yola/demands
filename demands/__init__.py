@@ -9,6 +9,7 @@ import logging
 import time
 
 from requests import Session
+from six import iteritems, itervalues
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class HTTPServiceClient(Session):
     def _get_request_params(self, **kwargs):
         """Merge shared params and new params."""
         request_params = copy.deepcopy(self._shared_request_params)
-        for key, value in kwargs.iteritems():
+        for key, value in iteritems(kwargs):
             if isinstance(value, dict) and key in request_params:
                 # ensure we don't lose dict values like headers or cookies
                 request_params[key].update(value)
@@ -115,7 +116,7 @@ class HTTPServiceClient(Session):
 
     def pre_send(self, request_params):
         """Override this method to modify sent request parameters"""
-        for adapter in self.adapters.itervalues():
+        for adapter in itervalues(self.adapters):
             adapter.max_retries = request_params.get('max_retries', 0)
         return self._format_json_request(request_params)
 

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
-import unittest2
 import inspect
+from unittest import TestCase
 
 from requests import Session, Response
 from mock import Mock, patch
+from six import itervalues
 
 from demands import HTTPServiceClient, HTTPServiceError
 
 
-class PatchedSessionTests(unittest2.TestCase):
+class PatchedSessionTests(TestCase):
     def setUp(self):
         # must patch inspect since it is used on Session.request, and when
         # Session.request is mocked, inspect blows up
@@ -189,14 +190,15 @@ class HttpServiceTests(PatchedSessionTests):
 
     def test_pre_send_sets_max_retries(self):
         self.service.pre_send({'max_retries': 2})
-        for adapter in self.service.adapters.itervalues():
+        for adapter in itervalues(self.service.adapters):
             self.assertEqual(adapter.max_retries, 2)
 
     def test_pre_send_defaults_max_retries_to_zero(self):
         self.service.pre_send({'max_retries': 2})
         self.service.pre_send({})
-        for adapter in self.service.adapters.itervalues():
+        for adapter in itervalues(self.service.adapters):
             self.assertEqual(adapter.max_retries, 0)
+
 
 def get_parsed_log_messages(mock_log, log_level):
     """Return the parsed log message sent to a mock log call at log_level
