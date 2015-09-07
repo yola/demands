@@ -1,5 +1,8 @@
 language: python
-
+sudo: false
+cache:
+  directories:
+    - $HOME/.cache/pip
 env:
     - TOXENV=py27
     - TOXENV=py33
