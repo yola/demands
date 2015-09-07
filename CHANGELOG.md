@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.1.0
+
+* Add Python 3 support
+
 ## 1.0.6
 
 * Switch to version `requests` >= `2.4.2`
