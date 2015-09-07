@@ -84,9 +84,9 @@ To generate the documentation:
 
     cd docs && PYTHONPATH=.. make singlehtml
 
-.. |Build Status| image:: https://travis-ci.org/yola/demands.png
+.. |Build Status| image:: https://img.shields.io/travis/yola/demands.svg
    :target: https://travis-ci.org/yola/demands
-.. |Coverage Status| image:: https://coveralls.io/repos/yola/demands/badge.png?branch=master
+.. |Coverage Status| image:: https://img.shields.io/coveralls/yola/demands.svg
    :target: https://coveralls.io/r/yola/demands?branch=master
 .. |Latest Version| image:: https://img.shields.io/pypi/v/demands.svg
    :target: https://pypi.python.org/pypi/demands/
