@@ -15,3 +15,6 @@ script:
 - tox
 after_success:
 - coveralls
+notifications:
+  slack:
+    secure: bGN/7RcHM9oHzKRW/NSDna95Syf0Kq/ZvaC4hf7k20Jc0U49uyvCIV58RQQgu/e21yNnthMGAXfbcHL9ovFTdKD3sdAmFg296DexGCV56MPxeLOcCF8AnLKBd5pXIb06VRfc82CPr6b4aqSPt1Xxj7sUSRD7GylvAxO8FaMAb0M=
