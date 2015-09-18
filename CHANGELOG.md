@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
-## 1.1.2
+## 1.1.3
 
 * Make Demands work correctly if `path` param is empty. Don't add slash to
   the base URL in this case.
