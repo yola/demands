@@ -188,9 +188,10 @@ class HttpServiceTests(PatchedSessionTests):
             allow_redirects=True
         )
 
-    def test_url_is_composed_properly_is_base_url_is_empty(self):
-        service = HTTPServiceClient('')
-        service.get('http://service.com/some/path/get-endpoint')
+    def test_url_is_composed_properly_if_path_is_empty(self):
+        service = HTTPServiceClient(
+            'http://service.com/some/path/get-endpoint')
+        service.get('')
         self.request.assert_called_with(
             method='GET', url='http://service.com/some/path/get-endpoint',
             allow_redirects=True

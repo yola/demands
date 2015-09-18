@@ -2,7 +2,8 @@
 
 ## 1.1.1
 
-* Now base URL can be empty, so user can pass full URL in path.
+* Make Demands work correctly if `path` param is empty. Don't add slash to
+  the base URL in this case.
 
 ## 1.1.0
 

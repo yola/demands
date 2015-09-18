@@ -82,10 +82,10 @@ class HTTPServiceClient(Session):
         """Sends a :class:`requests.Request` and demands
            a :class:`requests.Response`."""
 
-        if self.url:
+        if path:
             url = '%s/%s' % (self.url.rstrip('/'), path.lstrip('/'))
         else:
-            url = path
+            url = self.url
 
         request_params = self._get_request_params(method=method,
                                                   url=url, **kwargs)
