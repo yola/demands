@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.1.1
+
+* Make Demands work correctly if `path` param is empty. Don't add slash to
+  the base URL in this case.
+
 ## 1.1.0
 
 * Add Python 3 support
