@@ -1,5 +1,5 @@
 __doc__ = 'Base HTTP service client'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 __url__ = 'https://github.com/yola/demands'
 
 import copy
@@ -81,7 +81,12 @@ class HTTPServiceClient(Session):
     def request(self, method, path, **kwargs):
         """Sends a :class:`requests.Request` and demands
            a :class:`requests.Response`."""
-        url = '%s/%s' % (self.url.rstrip('/'), path.lstrip('/'))
+
+        if self.url:
+            url = '%s/%s' % (self.url.rstrip('/'), path.lstrip('/'))
+        else:
+            url = path
+
         request_params = self._get_request_params(method=method,
                                                   url=url, **kwargs)
         request_params = self.pre_send(request_params)

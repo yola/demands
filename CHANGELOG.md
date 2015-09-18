@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.1.1
+
+* Now base URL can be empty, so user can pass full URL in path.
+
 ## 1.1.0
 
 * Add Python 3 support

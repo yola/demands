@@ -188,6 +188,14 @@ class HttpServiceTests(PatchedSessionTests):
             allow_redirects=True
         )
 
+    def test_url_is_composed_properly_is_base_url_is_empty(self):
+        service = HTTPServiceClient('')
+        service.get('http://service.com/some/path/get-endpoint')
+        self.request.assert_called_with(
+            method='GET', url='http://service.com/some/path/get-endpoint',
+            allow_redirects=True
+        )
+
     def test_pre_send_sets_max_retries(self):
         self.service.pre_send({'max_retries': 2})
         for adapter in itervalues(self.service.adapters):
