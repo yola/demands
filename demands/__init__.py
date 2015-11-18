@@ -134,8 +134,11 @@ class HTTPServiceClient(Session):
         expected_codes = request_params.get('expected_response_codes', [])
         response.is_ok = response.status_code < 300
         if not (response.is_ok or response.status_code in expected_codes):
-            log.error(
-                'Unexpected response from %s: url: %s, code: %s, details: %s',
-                self.__class__.__name__, response.url, response.status_code,
-                response.content)
-            raise HTTPServiceError(response)
+            self.log_and_raise_error(response)
+
+    def log_and_raise_error(self, response):
+        log.error(
+            'Unexpected response from %s: url: %s, code: %s, details: %s',
+            self.__class__.__name__, response.url, response.status_code,
+            response.content)
+        raise HTTPServiceError(response)
