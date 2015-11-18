@@ -130,10 +130,14 @@ class HTTPServiceClient(Session):
         self._demand_success(response, kwargs)
         return response
 
-    def _demand_success(self, response, request_params):
+    def successful(self, response, request_params):
+        """Override this method to define what makes a successful response"""
         expected_codes = request_params.get('expected_response_codes', [])
-        response.is_ok = getattr(response, "is_ok", response.status_code < 300)
-        if not (response.is_ok or response.status_code in expected_codes):
+        return response.is_ok or response.status_code in expected_codes
+
+    def _demand_success(self, response, request_params):
+        response.is_ok = response.status_code < 300
+        if not self.successful(response, request_params):
             log.error(
                 'Unexpected response from %s: url: %s, code: %s, details: %s',
                 self.__class__.__name__, response.url, response.status_code,
