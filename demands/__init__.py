@@ -114,7 +114,7 @@ class HTTPServiceClient(Session):
 
     def is_ok(self, response):
         expected_codes = request_params.get('expected_response_codes', [])
-        return (response.is_ok = response.status_code < 300 or response.status_code in expected_codes)
+        return (response.status_code < 300 or response.status_code in expected_codes)
 
     def _format_json_request(self, request_params):
         if request_params.get('send_as_json') and request_params.get('data'):
