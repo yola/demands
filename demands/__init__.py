@@ -106,14 +106,12 @@ class HTTPServiceClient(Session):
             log.debug('Authentication via HTTP auth as "%s"', auth[0])
 
         response.is_ok = response.status_code < 300
-        if self._is_ok(response):
+        if self.is_success(response):
             return response
         else:
             raise HTTPServiceError(response)
 
-        return response
-
-    def is_ok(self, response):
+    def is_success(self, response):
         expected_codes = request_params.get('expected_response_codes', [])
         return (response.is_ok or response.status_code in expected_codes)
 
