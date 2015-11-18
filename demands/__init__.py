@@ -132,7 +132,7 @@ class HTTPServiceClient(Session):
 
     def _demand_success(self, response, request_params):
         expected_codes = request_params.get('expected_response_codes', [])
-        response.is_ok = response.status_code < 300
+        response.is_ok = getattr(response, "is_ok", response.status_code < 300)
         if not (response.is_ok or response.status_code in expected_codes):
             log.error(
                 'Unexpected response from %s: url: %s, code: %s, details: %s',
