@@ -141,22 +141,16 @@ class HttpServiceTests(PatchedSessionTests):
             self.service.request('METHOD', 'http://broken/')
             self.assertEqual(e.exception.code, 500)
             self.assertEqual(e.exception.details, 'content')
+            self.assertTrue(e.message.startswith(
+                'Unexpected response from HTTPServiceError: url: '
+                'http://broken/, code: 500, details: '
+            ))
 
     def test_post_sends_no_exception_in_case_of_expected_response_code(self):
         self.response.configure_mock(
             status_code=404, content='content', url='http://notfound/')
         self.service.request(
             'METHOD', 'http://notfound/', expected_response_codes=(404,))
-
-    def test_post_send_logs_errors(self):
-        """failed requests are logged with status code, and content"""
-        self.response.configure_mock(
-            status_code=500, content='content', url='http://service.com/')
-        with self.assertRaisesRegexp(
-                HTTPServiceError,
-                'Unexpected response from HTTPServiceError: url: '
-                'http://service.com/, code: 500, details: '):
-            self.service.request('METHOD', 'http://service.com/')
 
     def test_santization_of_request_parameters_removes_unknowns(self):
         lots_of_params = {
