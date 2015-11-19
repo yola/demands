@@ -142,7 +142,7 @@ class HttpServiceTests(PatchedSessionTests):
             self.assertEqual(e.exception.code, 500)
             self.assertEqual(e.exception.details, 'content')
             self.assertTrue(e.message.startswith(
-                'Unexpected response from HTTPServiceClient: url: '
+                'Unexpected response: url: '
                 'http://broken/, code: 500, details: '
             ))
 

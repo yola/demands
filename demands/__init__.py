@@ -15,11 +15,9 @@ log = logging.getLogger(__name__)
 
 
 class HTTPServiceError(AssertionError):
-    def __init__(self, response, client=None):
+    def __init__(self, response):
         """
         :param response: the HTTP response which was deemed in error
-        :param client: (optional) the client which received the error response.
-        The class name will be included in the message.
         """
         self.response = response
         try:
@@ -27,8 +25,7 @@ class HTTPServiceError(AssertionError):
         except ValueError:
             self.details = response.content
         super(AssertionError, self).__init__(
-            'Unexpected response%s: url: %s, code: %s, details: %s' % (
-                ('from %s' % client.__class__.__name__) if client else '',
+            'Unexpected response: url: %s, code: %s, details: %s' % (
                 response.url, response.status_code, self.details)
         )
 
@@ -141,4 +138,4 @@ class HTTPServiceClient(Session):
         expected_codes = request_params.get('expected_response_codes', [])
         response.is_ok = response.status_code < 300
         if not (response.is_ok or response.status_code in expected_codes):
-            raise HTTPServiceError(response, self)
+            raise HTTPServiceError(response)
