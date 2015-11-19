@@ -24,7 +24,7 @@ class HTTPServiceError(AssertionError):
         super(AssertionError, self).__init__(
             'Unexpected response from %s: url: %s, code: %s, details: %s' % (
                 self.__class__.__name__, response.url, response.status_code,
-                response.details)
+                self.details)
         )
 
 
