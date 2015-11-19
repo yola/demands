@@ -23,7 +23,7 @@ class HTTPServiceError(AssertionError):
             self.details = response.content
         super(AssertionError, self).__init__(
             'Unexpected response%s: url: %s, code: %s, details: %s' % (
-                'from %s' % client.__class__.__name__ if client else '',
+                ('from %s' % client.__class__.__name__) if client else '',
                 response.url, response.status_code, self.details)
         )
 
