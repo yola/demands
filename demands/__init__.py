@@ -109,11 +109,14 @@ class HTTPServiceClient(Session):
         if self.is_success(response):
             return response
         else:
-            raise HTTPServiceError(response)
+            self.process_error(response)
 
     def is_success(self, response):
         expected_codes = request_params.get('expected_response_codes', [])
         return (response.is_ok or response.status_code in expected_codes)
+
+    def process_error(self, response):
+        raise HTTPServiceError(response)
 
     def _format_json_request(self, request_params):
         if request_params.get('send_as_json') and request_params.get('data'):
