@@ -22,7 +22,9 @@ class HTTPServiceError(AssertionError):
         except ValueError:
             self.details = response.content
         super(AssertionError, self).__init__(
-            'code: %s, details: %s' % (response.status_code, self.details)
+            'Unexpected response from %s: url: %s, code: %s, details: %s' % (
+                self.__class__.__name__, response.url, response.status_code,
+                response.details)
         )
 
 
@@ -134,11 +136,4 @@ class HTTPServiceClient(Session):
         expected_codes = request_params.get('expected_response_codes', [])
         response.is_ok = response.status_code < 300
         if not (response.is_ok or response.status_code in expected_codes):
-            self.log_and_raise_error(response)
-
-    def log_and_raise_error(self, response):
-        log.error(
-            'Unexpected response from %s: url: %s, code: %s, details: %s',
-            self.__class__.__name__, response.url, response.status_code,
-            response.content)
-        raise HTTPServiceError(response)
+            raise HTTPServiceError(response)
