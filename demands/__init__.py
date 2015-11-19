@@ -16,6 +16,11 @@ log = logging.getLogger(__name__)
 
 class HTTPServiceError(AssertionError):
     def __init__(self, response, client=None):
+        """
+        :param response: the HTTP response which was deemed in error
+        :param client: (optional) the client which received the error response.
+        The class name will be included in the message.
+        """
         self.response = response
         try:
             self.details = response.json()
