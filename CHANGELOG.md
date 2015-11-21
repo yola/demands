@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.1.4
+
+* Stop logging an error for unsuccessful responses. Move the information
+  from the logging statement to the exception message.
+
 ## 1.1.3
 
 * Make Demands work correctly if `path` param is empty. Don't add slash to
