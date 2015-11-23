@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.1.5
+
+* No change: a broken version of 1.1.4 was released accidentally (files were missing from the package).
+
 ## 1.1.4
 
 * Stop logging an error for unsuccessful responses. Move the information
