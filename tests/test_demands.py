@@ -69,6 +69,15 @@ class HttpServiceTests(PatchedSessionTests):
         self.request.assert_called_with(
             method='DELETE', url='http://service.com/delete-endpoint')
 
+    def test_unacceptable_request(self):
+        def get():
+            self.service.get('/get-endpoint')
+        acceptable = True
+        self.service.is_acceptable = lambda *args: acceptable
+        get()
+        acceptable = False
+        self.assertRaises(HTTPServiceError, get)
+
     def test_headers_are_passed_and_overridable(self):
         service = HTTPServiceClient(
             url='http://localhost/',
