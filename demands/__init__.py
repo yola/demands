@@ -110,7 +110,7 @@ class HTTPServiceClient(Session):
             log.debug('Authentication via HTTP auth as "%s"', auth[0])
 
         response.is_ok = response.status_code < 300
-        if not self.is_acceptable(response, **request_params):
+        if not self.is_acceptable(response, request_params):
             raise HTTPServiceError(response)
         response = self.post_send(response, **request_params)
         return response
@@ -136,6 +136,6 @@ class HTTPServiceClient(Session):
         """Override this method to modify returned response"""
         return response
 
-    def is_acceptable(self, response, **request_params):
+    def is_acceptable(self, response, request_params):
         expected_codes = request_params.get('expected_response_codes', [])
         return response.is_ok or response.status_code in expected_codes
