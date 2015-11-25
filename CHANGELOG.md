@@ -1,5 +1,11 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.2.0
+
+* Allow the user to customise the definition of an acceptable response by overriding `is_acceptable`.
+* Exceptions are now raised directly by `request` if `is_acceptable()` returns `False` instead of in the default
+`post_send`.
+
 ## 1.1.5
 
 * No change: a broken version of 1.1.4 was released accidentally (files were missing from the package).
