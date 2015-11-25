@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 1.1.6
+
+* Allow the user to customise the definition of an acceptable response by overriding `is_acceptable`.
+
 ## 1.1.5
 
 * No change: a broken version of 1.1.4 was released accidentally (files were missing from the package).
