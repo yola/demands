@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## Dev
+
+* Add PaginatedAPIIterator, helper utility for paginated service methods
+
 ## 1.2.0
 
 * Allow the user to customise the definition of an acceptable response by overriding `is_acceptable`.
