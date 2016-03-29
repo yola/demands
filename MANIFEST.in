@@ -1,5 +1,7 @@
 include CHANGELOG.md
 include LICENSE
+include MANIFEST.in
 include README.rst
 include requirements.txt
+graft docs
 graft tests
