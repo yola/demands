@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
-## Dev
+## 1.3.0
 
 * Add PaginatedAPIIterator, helper utility for paginated service methods
 
