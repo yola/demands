@@ -1,5 +1,5 @@
 __doc__ = 'Base HTTP service client'
-__version__ = '1.2.0'
+__version__ = '1.3.0'
 __url__ = 'https://github.com/yola/demands'
 
 import copy
