@@ -1,6 +1,10 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
-## 1.3.0
+## 1.3.1
+
+* Add MANIFEST.in
+
+## 1.3.0 - Broken
 
 * Add PaginatedAPIIterator, helper utility for paginated service methods
 

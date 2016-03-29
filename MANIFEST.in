@@ -1,0 +1,7 @@
+include CHANGELOG.md
+include LICENSE
+include MANIFEST.in
+include README.rst
+include requirements.txt
+recursive-include docs *.py *.rst Makefile
+recursive-include test *.py
