@@ -3,5 +3,5 @@ include LICENSE
 include MANIFEST.in
 include README.rst
 include requirements.txt
-graft docs
-graft tests
+recursive-include docs *.py *.rst Makefile
+recursive-include test *.py
