@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import inspect
+import json
 from unittest import TestCase
 
 from requests import Session, Response
 from mock import Mock, patch
 from six import itervalues
 
-from demands import HTTPServiceClient, HTTPServiceError
+from demands import HTTPServiceClient, HTTPServiceError, JSONServiceClient
 
 
 class PatchedSessionTests(TestCase):
@@ -208,6 +209,27 @@ class HttpServiceTests(PatchedSessionTests):
         self.service.pre_send({})
         for adapter in itervalues(self.service.adapters):
             self.assertEqual(adapter.max_retries, 0)
+
+
+class JSONServiceClientTests(PatchedSessionTests):
+    """JSONServiceClient"""
+    def setUp(self):
+        PatchedSessionTests.setUp(self)
+        self.service = JSONServiceClient('http://service.com/')
+
+    def test_sends_request_data_as_serialized_json(self):
+        data = {'one': 1, 'two': 2}
+        self.service.get('/path/', data=data)
+        args, kwargs = self.request.call_args
+        self.assertEqual(kwargs['data'], json.dumps(data))
+
+    def test_sends_request_headers_with_service_content_type(self):
+        data = {'one': 1, 'two': 2}
+        self.service.get('/path/', data=data)
+        args, kwargs = self.request.call_args
+        self.assertEqual(
+            kwargs['headers']['Content-Type'],
+            self.service.content_type)
 
 
 def get_parsed_log_messages(mock_log, log_level):
