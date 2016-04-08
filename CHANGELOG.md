@@ -2,7 +2,8 @@
 
 ## Dev
 
-* Add JSONServiceClient which deprecates usage of `send_as_json` configurations
+* Add JSONServiceClient
+* Remove `send_as_json` configuration for HTTPServiceClient
 
 ## 1.3.1
 

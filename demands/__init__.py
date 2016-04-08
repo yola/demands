@@ -7,7 +7,6 @@ import inspect
 import json
 import logging
 import time
-import warnings
 
 from requests import Session
 from six import iteritems, itervalues
@@ -41,8 +40,6 @@ class HTTPServiceClient(Session):
     :param expected_response_codes: (optional) Workaround for services which
         returns non-expected results, example: when search for users, and
         expect [] for when nobody is found, yet a 404 is returned.
-    :param send_as_json: (optional) Encodes request data as json and sets
-        'Content-Type' header.
     :param client_name: (optional) Sets the User-Agent header.  Important
         because we want to accurately log errors and throw deprecation
         warnings when clients are outdated
@@ -116,30 +113,12 @@ class HTTPServiceClient(Session):
         response = self.post_send(response, **request_params)
         return response
 
-    def _format_json_request(self, request_params):
-        # TODO: This method and related class documentation should be removed
-        # upon major version change as its functionality is covered by the
-        # subclass JSONServiceClient
-        if request_params.get('send_as_json') and request_params.get('data'):
-            warnings.warn(
-                'Use of `send_as_json` is deprecated in favor of using an '
-                'instance of `JSONServiceClient` or writing your own subclass',
-                DeprecationWarning)
-            request_params['data'] = json.dumps(
-                request_params['data'],
-                default=str
-            )
-            request_params.setdefault('headers', {})['Content-Type'] = (
-                'application/json;charset=utf-8'
-            )
-        return request_params
-
     def pre_send(self, request_params):
         """Override this method to modify sent request parameters"""
         for adapter in itervalues(self.adapters):
             adapter.max_retries = request_params.get('max_retries', 0)
 
-        return self._format_json_request(request_params)
+        return request_params
 
     def post_send(self, response, **kwargs):
         """Override this method to modify returned response"""
