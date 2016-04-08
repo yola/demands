@@ -3,7 +3,7 @@ from unittest import TestCase
 from demands.pagination import PaginatedAPIIterator, PaginationType
 
 
-class PagitationTestsMixin(object):
+class PaginationTestsMixin(object):
     args = (1, 2, 3)
     kwargs = {'one': 1, 'two': 2}
 
@@ -28,7 +28,7 @@ class PagitationTestsMixin(object):
         self.assertEqual(r, self.responses)
 
 
-class PagePaginationTest(TestCase, PagitationTestsMixin):
+class PagePaginationTest(TestCase, PaginationTestsMixin):
     def get(self, *args, **kwargs):
         page = kwargs.pop('page')
         page_size = kwargs.pop('page_size')
@@ -43,7 +43,7 @@ class PagePaginationTest(TestCase, PagitationTestsMixin):
             self.get, args=self.args, kwargs=self.kwargs, page_size=10)
 
 
-class ItemPaginationTest(TestCase, PagitationTestsMixin):
+class ItemPaginationTest(TestCase, PaginationTestsMixin):
     def get(self, *args, **kwargs):
         start = kwargs.pop('offset')
         end = start + kwargs.pop('limit')
