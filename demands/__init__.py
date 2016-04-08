@@ -1,7 +1,3 @@
-__doc__ = 'Base HTTP service client'
-__version__ = '1.3.1'
-__url__ = 'https://github.com/yola/demands'
-
 import copy
 import inspect
 import json
@@ -10,6 +6,11 @@ import time
 
 from requests import Session
 from six import iteritems, itervalues
+
+
+__doc__ = 'Base HTTP service client'
+__version__ = '1.3.1'
+__url__ = 'https://github.com/yola/demands'
 
 log = logging.getLogger(__name__)
 
