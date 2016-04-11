@@ -38,9 +38,11 @@ class PaginatedAPIIterator(object):
         ...     end = start + length
         ...     return range(0, 100)[start:end]
         ...
-        >>> PaginatedAPIIterator(
+        >>> iterator = PaginatedAPIIterator(
         ...     numbers, page_param='offset', page_size_param='length',
         ...     page_size=10)
+        >>> list(iterator)
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, ...]
 
     The `pagination_type` configuration defines how the api behaves, by
     default this is set to `PaginationType.PAGE` which means the API should
@@ -50,12 +52,14 @@ class PaginatedAPIIterator(object):
 
         >>> def numbers(offset, limit):
         ...     start = offset
-        ...     end = start + length
+        ...     end = start + limit
         ...     return range(0, 100)[start:end]
         ...
-        >>> PaginationAPIIterator(
-        ...     numbers, page_param='offset', 'page_size_param='limit',
+        >>> iterator = PaginatedAPIIterator(
+        ...     numbers, page_param='offset', page_size_param='limit',
         ...     pagination_type=PaginationType.ITEM)
+        >>> list(iterator)
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, ...]
 
     """
     DEFAULT_OPTIONS = {
