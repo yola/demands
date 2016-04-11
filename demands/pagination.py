@@ -61,6 +61,19 @@ class PaginatedAPIIterator(object):
         >>> list(iterator)
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
+    If your paginated function returns a dict instead of a list of results,
+    you can specify a `results_key` option.
+
+
+        >>> def numbers(page, page_size):
+        ...    start = page * page_size
+        ...    end = start + page_size
+        ...    return {'results': range(0, 10)[start:end]}
+        ...
+        >>> iterator = PaginatedAPIIterator(numbers, results_key='results')
+        >>> list(iterator)
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
     """
     DEFAULT_OPTIONS = {
         PAGE_PARAM: 'page',
@@ -90,7 +103,14 @@ class PaginatedAPIIterator(object):
             self.options[PAGE_PARAM]: page,
             self.options[PAGE_SIZE_PARAM]: self.options[PAGE_SIZE],
         })
-        return self.paginated_fn(*self.args, **kwargs)
+        return self._get_results(**kwargs)
+
+    def _get_results(self, **kwargs):
+        results = self.paginated_fn(*self.args, **kwargs)
+        results_key = self.options.get('results_key')
+        if results_key:
+            results = results[results_key]
+        return results
 
     def _page_ids(self):
         if self.options[PAGINATION_TYPE] == PaginationType.PAGE:
