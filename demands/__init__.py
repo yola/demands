@@ -41,8 +41,6 @@ class HTTPServiceClient(Session):
     :param expected_response_codes: (optional) Workaround for services which
         returns non-expected results, example: when search for users, and
         expect [] for when nobody is found, yet a 404 is returned.
-    :param send_as_json: (optional) Encodes request data as json and sets
-        'Content-Type' header.
     :param client_name: (optional) Sets the User-Agent header.  Important
         because we want to accurately log errors and throw deprecation
         warnings when clients are outdated
@@ -84,9 +82,9 @@ class HTTPServiceClient(Session):
                     if key in self._VALID_REQUEST_ARGS)
 
     def request(self, method, path, **kwargs):
-        """Sends a :class:`requests.Request` and demands
-           a :class:`requests.Response`."""
-
+        """Send a :class:`requests.Request` and demand a
+        :class:`requests.Response`
+        """
         if path:
             url = '%s/%s' % (self.url.rstrip('/'), path.lstrip('/'))
         else:
@@ -116,22 +114,12 @@ class HTTPServiceClient(Session):
         response = self.post_send(response, **request_params)
         return response
 
-    def _format_json_request(self, request_params):
-        if request_params.get('send_as_json') and request_params.get('data'):
-            request_params['data'] = json.dumps(
-                request_params['data'],
-                default=str
-            )
-            request_params.setdefault('headers', {})['Content-Type'] = (
-                'application/json;charset=utf-8'
-            )
-        return request_params
-
     def pre_send(self, request_params):
         """Override this method to modify sent request parameters"""
         for adapter in itervalues(self.adapters):
             adapter.max_retries = request_params.get('max_retries', 0)
-        return self._format_json_request(request_params)
+
+        return request_params
 
     def post_send(self, response, **kwargs):
         """Override this method to modify returned response"""
@@ -154,3 +142,26 @@ class HTTPServiceClient(Session):
         """
         expected_codes = request_params.get('expected_response_codes', [])
         return response.is_ok or response.status_code in expected_codes
+
+
+class JSONServiceClient(HTTPServiceClient):
+    """Base JSON service client
+
+    Provides common functionality necessary to interact with JSON http apis.
+    Extends :class:`demands.HTTPServiceClient`
+    """
+    content_type = 'application/json;charset=utf-8'
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('headers', {}).update({
+            'Content-Type': self.content_type,
+        })
+        super(JSONServiceClient, self).__init__(*args, **kwargs)
+
+    def pre_send(self, request_params):
+        request_params = super(
+            JSONServiceClient, self).pre_send(request_params)
+        if 'data' in request_params:
+            request_params['data'] = json.dumps(
+                request_params['data'], default=str)
+        return request_params

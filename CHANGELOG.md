@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## Dev
+
+* Add JSONServiceClient
+* Remove `send_as_json` configuration for HTTPServiceClient
+
 ## 1.3.1
 
 * Add MANIFEST.in
