@@ -15,32 +15,44 @@ class PaginationType(object):
 class PaginatedAPIIterator(object):
     """Paginated API iterator
 
-    Provides an interator for items in a paginated function, useful for service
+    Provides an iterator for items in a paginated function, useful for service
     methods that return paginated results.
 
-    The paginated function accepts a page and page size argument and returns
-    a page result for those arguments.
+    The paginated function should accept a page and page size argument and
+    return a page of results for those arguments nested in a 'results' key:
 
         >>> def numbers(page, page_size):
         ...    start = page * page_size
         ...    end = start + page_size
-        ...    return range(0, 10)[start:end]
+        ...    return {'results': range(0, 100)[start:end]}
         ...
         >>> iterator = PaginatedAPIIterator(numbers)
         >>> list(iterator)
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
-    The names of these arguments and value for `page_size` can be overriden
-    through the init of the class:
+    The names of these arguments, the value for `page_size`, and the results
+    key can be overriden through the init of the class:
 
         >>> def numbers(offset, length):
         ...     start = offset * length
         ...     end = start + length
-        ...     return range(0, 100)[start:end]
+        ...     return {'numbers': range(0, 100)[start:end]}
         ...
         >>> iterator = PaginatedAPIIterator(
         ...     numbers, page_param='offset', page_size_param='length',
-        ...     page_size=10)
+        ...     page_size=10, results_key='numbers')
+        >>> list(iterator)
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
+
+    If your function returns the results as a top-level list, set the
+    `results_key` to `None`.
+
+        >>> def numbers(page, page_size):
+        ...    start = page * page_size
+        ...    end = start + page_size
+        ...    return range(0, 100)[start:end]
+        ...
+        >>> iterator = PaginatedAPIIterator(numbers, results_key=None)
         >>> list(iterator)
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
@@ -53,7 +65,7 @@ class PaginatedAPIIterator(object):
         >>> def numbers(offset, limit):
         ...     start = offset
         ...     end = start + limit
-        ...     return range(0, 100)[start:end]
+        ...     return {'results': range(0, 100)[start:end]}
         ...
         >>> iterator = PaginatedAPIIterator(
         ...     numbers, page_param='offset', page_size_param='limit',
@@ -61,25 +73,13 @@ class PaginatedAPIIterator(object):
         >>> list(iterator)
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
-    If your paginated function returns a dict instead of a list of results,
-    you can specify a `results_key` option.
-
-
-        >>> def numbers(page, page_size):
-        ...    start = page * page_size
-        ...    end = start + page_size
-        ...    return {'results': range(0, 10)[start:end]}
-        ...
-        >>> iterator = PaginatedAPIIterator(numbers, results_key='results')
-        >>> list(iterator)
-        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
     """
     DEFAULT_OPTIONS = {
         PAGE_PARAM: 'page',
         PAGE_SIZE_PARAM: 'page_size',
         PAGE_SIZE: 100,
         PAGINATION_TYPE: PaginationType.PAGE,
+        'results_key': 'results',
     }
 
     def __init__(self, paginated_fn, args=(), kwargs=None, **options):

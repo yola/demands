@@ -40,7 +40,8 @@ class PagePaginationTest(TestCase, PaginationTestsMixin):
 
     def setUp(self):
         self.psc = PaginatedAPIIterator(
-            self.get, args=self.args, kwargs=self.kwargs, page_size=10)
+            self.get, args=self.args, kwargs=self.kwargs, page_size=10,
+            results_key=None)
 
 
 class PagePaginationTestWithNestedResults(PagePaginationTest):
@@ -51,8 +52,7 @@ class PagePaginationTestWithNestedResults(PagePaginationTest):
 
     def setUp(self):
         self.psc = PaginatedAPIIterator(
-            self.get, args=self.args, kwargs=self.kwargs, page_size=10,
-            results_key='results')
+            self.get, args=self.args, kwargs=self.kwargs, page_size=10)
 
 
 class ItemPaginationTest(TestCase, PaginationTestsMixin):
@@ -65,7 +65,7 @@ class ItemPaginationTest(TestCase, PaginationTestsMixin):
         self.psc = PaginatedAPIIterator(
             self.get, args=self.args, kwargs=self.kwargs, page_size=10,
             page_param='offset', page_size_param='limit',
-            pagination_type=PaginationType.ITEM)
+            pagination_type=PaginationType.ITEM, results_key=None)
 
 
 class ItemPaginationTestWithNestedResults(ItemPaginationTest):
@@ -78,4 +78,4 @@ class ItemPaginationTestWithNestedResults(ItemPaginationTest):
         self.psc = PaginatedAPIIterator(
             self.get, args=self.args, kwargs=self.kwargs, page_size=10,
             page_param='offset', page_size_param='limit',
-            pagination_type=PaginationType.ITEM, results_key='results')
+            pagination_type=PaginationType.ITEM)
