@@ -5,6 +5,7 @@ PAGE_PARAM = 'page_param'
 PAGE_SIZE_PARAM = 'page_size_param'
 PAGE_SIZE = 'page_size'
 PAGINATION_TYPE = 'pagination_type'
+RESULTS_KEY = 'results_key'
 
 
 class PaginationType(object):
@@ -79,7 +80,7 @@ class PaginatedAPIIterator(object):
         PAGE_SIZE_PARAM: 'page_size',
         PAGE_SIZE: 100,
         PAGINATION_TYPE: PaginationType.PAGE,
-        'results_key': 'results',
+        RESULTS_KEY: 'results',
     }
 
     def __init__(self, paginated_fn, args=(), kwargs=None, **options):
