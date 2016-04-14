@@ -33,7 +33,7 @@ class PagePaginationTest(TestCase, PaginationTestsMixin):
         page = kwargs.pop('page')
         page_size = kwargs.pop('page_size')
 
-        start = page * page_size
+        start = (page - 1) * page_size
         end = start + page_size
 
         return super(PagePaginationTest, self).get(start, end, *args, **kwargs)

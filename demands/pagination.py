@@ -6,6 +6,7 @@ PAGE_SIZE_PARAM = 'page_size_param'
 PAGE_SIZE = 'page_size'
 PAGINATION_TYPE = 'pagination_type'
 RESULTS_KEY = 'results_key'
+START = 'start'
 
 
 class PaginationType(object):
@@ -23,7 +24,7 @@ class PaginatedAPIIterator(object):
     return a page of results for those arguments nested in a 'results' key:
 
         >>> def numbers(page, page_size):
-        ...    start = page * page_size
+        ...    start = (page - 1) * page_size
         ...    end = start + page_size
         ...    return {'results': range(0, 100)[start:end]}
         ...
@@ -31,17 +32,18 @@ class PaginatedAPIIterator(object):
         >>> list(iterator)
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
-    The names of these arguments, the value for `page_size`, and the results
-    key can be overriden through the init of the class:
+    The names of these arguments, the value for `page_size`, the starting page
+    number (which defaults to page 1), and the results key can be overriden
+    through the init of the class:
 
         >>> def numbers(offset, length):
-        ...     start = offset * length
+        ...     start = offset * length  # expects start of 0
         ...     end = start + length
         ...     return {'numbers': range(0, 100)[start:end]}
         ...
         >>> iterator = PaginatedAPIIterator(
         ...     numbers, page_param='offset', page_size_param='length',
-        ...     page_size=10, results_key='numbers')
+        ...     page_size=10, results_key='numbers', start=0)
         >>> list(iterator)
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
@@ -49,7 +51,7 @@ class PaginatedAPIIterator(object):
     `results_key` to `None`.
 
         >>> def numbers(page, page_size):
-        ...    start = page * page_size
+        ...    start = (page - 1) * page_size
         ...    end = start + page_size
         ...    return range(0, 100)[start:end]
         ...
@@ -115,7 +117,9 @@ class PaginatedAPIIterator(object):
 
     def _page_ids(self):
         if self.options[PAGINATION_TYPE] == PaginationType.PAGE:
-            return count()
+            start = self.options.get(START, 1)
+            return count(start)
         if self.options[PAGINATION_TYPE] == PaginationType.ITEM:
-            return count(0, self.options[PAGE_SIZE])
+            start = self.options.get(START, 0)
+            return count(start, self.options[PAGE_SIZE])
         raise ValueError('Unknown pagination_type')
