@@ -108,7 +108,7 @@ class PaginatedAPIIterator(object):
 
     def _get_results(self, **kwargs):
         results = self.paginated_fn(*self.args, **kwargs)
-        results_key = self.options.get('results_key')
+        results_key = self.options.get(RESULTS_KEY)
         if results_key:
             results = results[results_key]
         return results
