@@ -165,3 +165,9 @@ class JSONServiceClient(HTTPServiceClient):
             request_params['data'] = json.dumps(
                 request_params['data'], default=str)
         return request_params
+
+    def post_send(self, response, **kwargs):
+        response = super(JSONServiceClient, self).post_send(response, **kwargs)
+        if not response.content:
+            return None
+        return response.json()

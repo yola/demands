@@ -220,6 +220,21 @@ class JSONServiceClientTests(PatchedSessionTests):
             kwargs['headers']['Content-Type'],
             self.service.content_type)
 
+    def test_decodes_json_responses(self):
+        self.assertEqual(
+            self.service.get('/path/'), self.response.json.return_value)
+        self.response.json.assert_called_with()
+
+    def test_returns_null_for_no_content_responses(self):
+        self.response.content = b''
+        self.response.status_code = 204
+        self.assertIsNone(self.service.get('/path/'))
+
+    def test_raises_error_for_invalid_json(self):
+        self.response.json.side_effect = ValueError
+        with self.assertRaises(ValueError):
+            self.service.get('/path/')
+
 
 def get_parsed_log_messages(mock_log, log_level):
     """Return the parsed log message sent to a mock log call at log_level
