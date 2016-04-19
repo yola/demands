@@ -9,7 +9,7 @@ from six import iteritems, itervalues
 
 
 __doc__ = 'Base HTTP service client'
-__version__ = '1.3.1'
+__version__ = '2.0.0'
 __url__ = 'https://github.com/yola/demands'
 
 log = logging.getLogger(__name__)

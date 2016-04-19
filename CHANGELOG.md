@@ -1,9 +1,13 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
-## Dev
+## 2.0.0
 
 * Add JSONServiceClient
 * Remove `send_as_json` configuration for HTTPServiceClient
+* Changes to PaginatedAPIIterator:
+    * Default start page is 1 for page-based pagination (was 0)
+    * Expects the paginated function to return a dict with a `'results'` key
+    * See PaginatedAPIIterator docstring for customizing those behaviors
 
 ## 1.3.1
 
