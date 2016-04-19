@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## Dev
+
+* Add decoding of json responses to JSONServiceClient
+
 ## 2.0.0
 
 * Add JSONServiceClient
