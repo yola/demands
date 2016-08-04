@@ -7,7 +7,7 @@ from requests import Session, Response
 from mock import Mock, patch
 from six import itervalues
 
-from demands import HTTPServiceClient, HTTPServiceError, JSONServiceClient
+from demands import HTTPServiceClient, HTTPServiceError
 
 
 class PatchedSessionTests(TestCase):
@@ -198,42 +198,6 @@ class HttpServiceTests(PatchedSessionTests):
         self.service.pre_send({})
         for adapter in itervalues(self.service.adapters):
             self.assertEqual(adapter.max_retries, 0)
-
-
-class JSONServiceClientTests(PatchedSessionTests):
-    """JSONServiceClient"""
-    def setUp(self):
-        PatchedSessionTests.setUp(self)
-        self.service = JSONServiceClient('http://service.com/')
-
-    def test_sends_request_data_as_serialized_json(self):
-        data = {'one': 1, 'two': 2}
-        self.service.get('/path/', data=data)
-        args, kwargs = self.request.call_args
-        self.assertEqual(kwargs['data'], json.dumps(data))
-
-    def test_sends_request_headers_with_service_content_type(self):
-        data = {'one': 1, 'two': 2}
-        self.service.get('/path/', data=data)
-        args, kwargs = self.request.call_args
-        self.assertEqual(
-            kwargs['headers']['Content-Type'],
-            self.service.content_type)
-
-    def test_decodes_json_responses(self):
-        self.assertEqual(
-            self.service.get('/path/'), self.response.json.return_value)
-        self.response.json.assert_called_with()
-
-    def test_returns_null_for_no_content_responses(self):
-        self.response.content = b''
-        self.response.status_code = 204
-        self.assertIsNone(self.service.get('/path/'))
-
-    def test_raises_error_for_invalid_json(self):
-        self.response.json.side_effect = ValueError
-        with self.assertRaises(ValueError):
-            self.service.get('/path/')
 
 
 def get_parsed_log_messages(mock_log, log_level):
