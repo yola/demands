@@ -142,32 +142,3 @@ class HTTPServiceClient(Session):
         """
         expected_codes = request_params.get('expected_response_codes', [])
         return response.is_ok or response.status_code in expected_codes
-
-
-class JSONServiceClient(HTTPServiceClient):
-    """Base JSON service client
-
-    Provides common functionality necessary to interact with JSON http apis.
-    Extends :class:`demands.HTTPServiceClient`
-    """
-    content_type = 'application/json;charset=utf-8'
-
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault('headers', {}).update({
-            'Content-Type': self.content_type,
-        })
-        super(JSONServiceClient, self).__init__(*args, **kwargs)
-
-    def pre_send(self, request_params):
-        request_params = super(
-            JSONServiceClient, self).pre_send(request_params)
-        if 'data' in request_params:
-            request_params['data'] = json.dumps(
-                request_params['data'], default=str)
-        return request_params
-
-    def post_send(self, response, **kwargs):
-        response = super(JSONServiceClient, self).post_send(response, **kwargs)
-        if not response.content:
-            return None
-        return response.json()

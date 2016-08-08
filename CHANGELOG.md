@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## Dev
+
+* Remove JSONServiceClient. Newest `requests` version provides functionality
+  that obviates the need for it.
+
 ## 3.0.0
 
 * Add decoding of json responses to JSONServiceClient
