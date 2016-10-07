@@ -14,11 +14,11 @@ class PaginationType(object):
     PAGE = 'page'
 
 
-class PaginatedAPIIterator(object):
-    """Paginated API iterator
+class PaginatedResults(object):
+    """Paginated API results
 
-    Provides an iterator for items in a paginated function, useful for service
-    methods that return paginated results.
+    Returns an iteratable container of items from paginated function, useful
+    for service methods that return paginated results.
 
     The paginated function should accept a page and page size argument and
     return a page of results for those arguments nested in a 'results' key:
@@ -28,8 +28,8 @@ class PaginatedAPIIterator(object):
         ...    end = start + page_size
         ...    return {'results': range(0, 100)[start:end]}
         ...
-        >>> iterator = PaginatedAPIIterator(numbers)
-        >>> list(iterator)
+        >>> results = PaginatedResults(numbers)
+        >>> list(results)
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
     The names of these arguments, the value for `page_size`, the starting page
@@ -41,10 +41,10 @@ class PaginatedAPIIterator(object):
         ...     end = start + length
         ...     return {'numbers': range(0, 100)[start:end]}
         ...
-        >>> iterator = PaginatedAPIIterator(
+        >>> results = PaginatedResults(
         ...     numbers, page_param='offset', page_size_param='length',
         ...     page_size=10, results_key='numbers', start=0)
-        >>> list(iterator)
+        >>> [n for n in results]
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
     If your function returns the results as a top-level list, set the
@@ -55,8 +55,8 @@ class PaginatedAPIIterator(object):
         ...    end = start + page_size
         ...    return range(0, 100)[start:end]
         ...
-        >>> iterator = PaginatedAPIIterator(numbers, results_key=None)
-        >>> list(iterator)
+        >>> results = PaginatedResults(numbers, results_key=None)
+        >>> list(results)
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
     The `pagination_type` configuration defines how the api behaves, by
@@ -70,10 +70,10 @@ class PaginatedAPIIterator(object):
         ...     end = start + limit
         ...     return {'results': range(0, 100)[start:end]}
         ...
-        >>> iterator = PaginatedAPIIterator(
+        >>> results = PaginatedResults(
         ...     numbers, page_param='offset', page_size_param='limit',
         ...     pagination_type=PaginationType.ITEM)
-        >>> list(iterator)
+        >>> list(results)
         [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, ... 99]
 
     """

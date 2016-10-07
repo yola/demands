@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from demands.pagination import PaginatedAPIIterator, PaginationType
+from demands.pagination import PaginatedResults, PaginationType
 
 
 class PaginationTestsMixin(object):
@@ -39,7 +39,7 @@ class PagePaginationTest(TestCase, PaginationTestsMixin):
         return super(PagePaginationTest, self).get(start, end, *args, **kwargs)
 
     def setUp(self):
-        self.psc = PaginatedAPIIterator(
+        self.psc = PaginatedResults(
             self.get, args=self.args, kwargs=self.kwargs, page_size=10,
             results_key=None)
 
@@ -51,7 +51,7 @@ class PagePaginationTestWithNestedResults(PagePaginationTest):
         return {'results': results}
 
     def setUp(self):
-        self.psc = PaginatedAPIIterator(
+        self.psc = PaginatedResults(
             self.get, args=self.args, kwargs=self.kwargs, page_size=10)
 
 
@@ -62,7 +62,7 @@ class ItemPaginationTest(TestCase, PaginationTestsMixin):
         return super(ItemPaginationTest, self).get(start, end, *args, **kwargs)
 
     def setUp(self):
-        self.psc = PaginatedAPIIterator(
+        self.psc = PaginatedResults(
             self.get, args=self.args, kwargs=self.kwargs, page_size=10,
             page_param='offset', page_size_param='limit',
             pagination_type=PaginationType.ITEM, results_key=None)
@@ -75,7 +75,7 @@ class ItemPaginationTestWithNestedResults(ItemPaginationTest):
         return {'results': results}
 
     def setUp(self):
-        self.psc = PaginatedAPIIterator(
+        self.psc = PaginatedResults(
             self.get, args=self.args, kwargs=self.kwargs, page_size=10,
             page_param='offset', page_size_param='limit',
             pagination_type=PaginationType.ITEM)
