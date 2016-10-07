@@ -2,7 +2,9 @@
 
 ## DEV
 
-* Renamed `PaginatedAPIIterator` to `PaginatedResults`.
+* Rename `PaginatedAPIIterator` to `PaginatedResults`.
+* Remove JSONServiceClient. Newest `requests` version provides functionality
+  that obviates the need for it.
 
 ## 3.0.0
 
