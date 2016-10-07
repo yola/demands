@@ -17,7 +17,7 @@ class PaginationType(object):
 class PaginatedResults(object):
     """Paginated API results
 
-    Returns an iteratable object for items in a paginated function, useful
+    Returns an iteratable container of items from paginated function, useful
     for service methods that return paginated results.
 
     The paginated function should accept a page and page size argument and
