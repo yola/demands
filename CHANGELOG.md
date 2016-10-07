@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
-## DEV
+## 4.0.0
 
 * Rename `PaginatedAPIIterator` to `PaginatedResults`.
 * Remove JSONServiceClient. Newest `requests` version provides functionality
