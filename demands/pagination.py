@@ -94,10 +94,10 @@ class PaginatedResults(object):
 
     def __iter__(self):
         for page_id in self._page_ids():
-            page = self._get_page(page_id)
+            (page, is_last_page) = self._get_page(page_id)
             for result in page:
                 yield result
-            if len(page) < self.options[PAGE_SIZE]:
+            if len(page) < self.options[PAGE_SIZE] or is_last_page:
                 return
 
     def _get_page(self, page):
@@ -109,11 +109,14 @@ class PaginatedResults(object):
         return self._get_results(**kwargs)
 
     def _get_results(self, **kwargs):
+        is_last_page = False
+
         results = self.paginated_fn(*self.args, **kwargs)
         results_key = self.options.get(RESULTS_KEY)
         if results_key:
+            is_last_page = ('next' in results and results['next'] is None)
             results = results[results_key]
-        return results
+        return results, is_last_page
 
     def _page_ids(self):
         if self.options[PAGINATION_TYPE] == PaginationType.PAGE:
