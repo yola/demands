@@ -99,4 +99,4 @@ class ItemPaginationTestWithNestedResultsAndNextLink(TestCase):
             range(offset, offset+kwargs['limit'])), 'next': next}
 
     def test_iteration_stops_on_empty_next(self):
-        self.assertEqual(list(self.psc), range(0, 50))
+        self.assertEqual(list(self.psc), list(range(0, 50)))
