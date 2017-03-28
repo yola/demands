@@ -108,8 +108,8 @@ class PaginatedResults(object):
             self.options[PAGE_PARAM]: page,
             self.options[PAGE_SIZE_PARAM]: self.options[PAGE_SIZE],
         })
-        results = self.paginated_fn(*self.args, **kwargs)
-        return Page(results, self.options)
+        one_page_data = self.paginated_fn(*self.args, **kwargs)
+        return Page(one_page_data, self.options)
 
     def _page_ids(self):
         if self.options[PAGINATION_TYPE] == PaginationType.PAGE:
@@ -122,8 +122,8 @@ class PaginatedResults(object):
 
 
 class Page(object):
-    def __init__(self, results, options):
-        self._data = results
+    def __init__(self, data, options):
+        self._data = data
         self._options = options
 
     @property
