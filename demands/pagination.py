@@ -126,8 +126,6 @@ class Page(object):
         self._results = results
         self._options = options
 
-        self._next_key = self._options.get(NEXT_KEY)
-
     @property
     def data(self):
         results_key = self._options.get(RESULTS_KEY)
@@ -141,8 +139,10 @@ class Page(object):
 
     @property
     def is_last_page(self):
+        next_key = self._options.get(NEXT_KEY)
+
         next_page_is_null = (
-            self._next_key in self._results and
-            self._results[self._next_key] is None
+            next_key in self._results and
+            self._results[next_key] is None
         )
         return self.size < self._options[PAGE_SIZE] or next_page_is_null
