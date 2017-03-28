@@ -86,7 +86,7 @@ class ItemPaginationTestWithNestedResultsAndNextLink(TestCase):
         self.psc = PaginatedResults(
             self.get, page_size=10,
             page_param='offset', page_size_param='limit',
-            pagination_type=PaginationType.ITEM)
+            pagination_type=PaginationType.ITEM, next_key='next_page')
 
     def get(self, *args, **kwargs):
         # Emulate 5 full pages (offset 0-4), then emulate error.
@@ -96,7 +96,7 @@ class ItemPaginationTestWithNestedResultsAndNextLink(TestCase):
 
         next = 'next_url' if offset < 4 * 10 else None
         return {'results': list(
-            range(offset, offset+kwargs['limit'])), 'next': next}
+            range(offset, offset+kwargs['limit'])), 'next_page': next}
 
     def test_iteration_stops_on_empty_next(self):
         self.assertEqual(list(self.psc), list(range(0, 50)))

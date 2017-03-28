@@ -6,6 +6,7 @@ PAGE_SIZE_PARAM = 'page_size_param'
 PAGE_SIZE = 'page_size'
 PAGINATION_TYPE = 'pagination_type'
 RESULTS_KEY = 'results_key'
+NEXT_KEY = 'next_key'
 START = 'start'
 
 
@@ -83,6 +84,7 @@ class PaginatedResults(object):
         PAGE_SIZE: 100,
         PAGINATION_TYPE: PaginationType.PAGE,
         RESULTS_KEY: 'results',
+        NEXT_KEY: 'next',
     }
 
     def __init__(self, paginated_fn, args=(), kwargs=None, **options):
@@ -94,10 +96,10 @@ class PaginatedResults(object):
 
     def __iter__(self):
         for page_id in self._page_ids():
-            (page, is_last_page) = self._get_page(page_id)
-            for result in page:
-                yield result
-            if len(page) < self.options[PAGE_SIZE] or is_last_page:
+            page = self._get_page(page_id)
+            for data in page.data:
+                yield data
+            if page.size < self.options[PAGE_SIZE] or page.is_last_page:
                 return
 
     def _get_page(self, page):
@@ -106,15 +108,17 @@ class PaginatedResults(object):
             self.options[PAGE_PARAM]: page,
             self.options[PAGE_SIZE_PARAM]: self.options[PAGE_SIZE],
         })
-        return self._get_results(**kwargs)
+        (data, is_last_page) = self._get_results(**kwargs)
+        return Page(data, is_last_page)
 
     def _get_results(self, **kwargs):
         is_last_page = False
 
         results = self.paginated_fn(*self.args, **kwargs)
         results_key = self.options.get(RESULTS_KEY)
+        next_key = self.options.get(NEXT_KEY)
         if results_key:
-            is_last_page = ('next' in results and results['next'] is None)
+            is_last_page = (next_key in results and results[next_key] is None)
             results = results[results_key]
         return results, is_last_page
 
@@ -126,3 +130,13 @@ class PaginatedResults(object):
             start = self.options.get(START, 0)
             return count(start, self.options[PAGE_SIZE])
         raise ValueError('Unknown pagination_type')
+
+
+class Page(object):
+    def __init__(self, data, is_last_page):
+        self.data = data
+        self.is_last_page = is_last_page
+
+    @property
+    def size(self):
+        return len(self.data)
