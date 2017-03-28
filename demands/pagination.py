@@ -111,17 +111,6 @@ class PaginatedResults(object):
         results = self.paginated_fn(*self.args, **kwargs)
         return Page(results, self.options)
 
-    def _get_results(self, **kwargs):
-        is_last_page = False
-
-        results = self.paginated_fn(*self.args, **kwargs)
-        results_key = self.options.get(RESULTS_KEY)
-        next_key = self.options.get(NEXT_KEY)
-        if results_key:
-            is_last_page = (next_key in results and results[next_key] is None)
-            results = results[results_key]
-        return results, is_last_page
-
     def _page_ids(self):
         if self.options[PAGINATION_TYPE] == PaginationType.PAGE:
             start = self.options.get(START, 1)
