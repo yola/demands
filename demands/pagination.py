@@ -123,15 +123,15 @@ class PaginatedResults(object):
 
 class Page(object):
     def __init__(self, results, options):
-        self._results = results
+        self._data = results
         self._options = options
 
     @property
     def data(self):
         results_key = self._options.get(RESULTS_KEY)
         if results_key:
-            return self._results[results_key]
-        return self._results
+            return self._data[results_key]
+        return self._data
 
     @property
     def size(self):
@@ -142,7 +142,7 @@ class Page(object):
         next_key = self._options.get(NEXT_KEY)
 
         next_page_is_null = (
-            next_key in self._results and
-            self._results[next_key] is None
+            next_key in self._data and
+            self._data[next_key] is None
         )
         return self.size < self._options[PAGE_SIZE] or next_page_is_null
