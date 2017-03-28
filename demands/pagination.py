@@ -99,7 +99,7 @@ class PaginatedResults(object):
             page = self._get_page(page_id)
             for data in page.data:
                 yield data
-            if page.size < self.options[PAGE_SIZE] or page.is_last_page:
+            if page.is_last_page:
                 return
 
     def _get_page(self, page):
@@ -108,8 +108,8 @@ class PaginatedResults(object):
             self.options[PAGE_PARAM]: page,
             self.options[PAGE_SIZE_PARAM]: self.options[PAGE_SIZE],
         })
-        (data, is_last_page) = self._get_results(**kwargs)
-        return Page(data, is_last_page)
+        results = self.paginated_fn(*self.args, **kwargs)
+        return Page(results, self.options)
 
     def _get_results(self, **kwargs):
         is_last_page = False
@@ -133,10 +133,27 @@ class PaginatedResults(object):
 
 
 class Page(object):
-    def __init__(self, data, is_last_page):
-        self.data = data
-        self.is_last_page = is_last_page
+    def __init__(self, results, options):
+        self._results = results
+        self._options = options
+
+        self._next_key = self._options.get(NEXT_KEY)
+
+    @property
+    def data(self):
+        results_key = self._options.get(RESULTS_KEY)
+        if results_key:
+            return self._results[results_key]
+        return self._results
 
     @property
     def size(self):
         return len(self.data)
+
+    @property
+    def is_last_page(self):
+        next_page_is_null = (
+            self._next_key in self._results and
+            self._results[self._next_key] is None
+        )
+        return self.size < self._options[PAGE_SIZE] or next_page_is_null
