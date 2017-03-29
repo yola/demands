@@ -6,6 +6,7 @@ PAGE_SIZE_PARAM = 'page_size_param'
 PAGE_SIZE = 'page_size'
 PAGINATION_TYPE = 'pagination_type'
 RESULTS_KEY = 'results_key'
+NEXT_KEY = 'next_key'
 START = 'start'
 
 
@@ -83,6 +84,7 @@ class PaginatedResults(object):
         PAGE_SIZE: 100,
         PAGINATION_TYPE: PaginationType.PAGE,
         RESULTS_KEY: 'results',
+        NEXT_KEY: 'next',
     }
 
     def __init__(self, paginated_fn, args=(), kwargs=None, **options):
@@ -95,9 +97,9 @@ class PaginatedResults(object):
     def __iter__(self):
         for page_id in self._page_ids():
             page = self._get_page(page_id)
-            for result in page:
-                yield result
-            if len(page) < self.options[PAGE_SIZE]:
+            for item in page.items:
+                yield item
+            if page.is_last_page:
                 return
 
     def _get_page(self, page):
@@ -106,14 +108,8 @@ class PaginatedResults(object):
             self.options[PAGE_PARAM]: page,
             self.options[PAGE_SIZE_PARAM]: self.options[PAGE_SIZE],
         })
-        return self._get_results(**kwargs)
-
-    def _get_results(self, **kwargs):
-        results = self.paginated_fn(*self.args, **kwargs)
-        results_key = self.options.get(RESULTS_KEY)
-        if results_key:
-            results = results[results_key]
-        return results
+        one_page_data = self.paginated_fn(*self.args, **kwargs)
+        return Page(one_page_data, self.options)
 
     def _page_ids(self):
         if self.options[PAGINATION_TYPE] == PaginationType.PAGE:
@@ -123,3 +119,30 @@ class PaginatedResults(object):
             start = self.options.get(START, 0)
             return count(start, self.options[PAGE_SIZE])
         raise ValueError('Unknown pagination_type')
+
+
+class Page(object):
+    def __init__(self, data, options):
+        self._data = data
+        self._options = options
+
+    @property
+    def items(self):
+        results_key = self._options.get(RESULTS_KEY)
+        if results_key:
+            return self._data[results_key]
+        return self._data
+
+    @property
+    def size(self):
+        return len(self.items)
+
+    @property
+    def is_last_page(self):
+        next_key = self._options.get(NEXT_KEY)
+
+        next_page_is_null = (
+            next_key in self._data and
+            self._data[next_key] is None
+        )
+        return self.size < self._options[PAGE_SIZE] or next_page_is_null
