@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 4.1.0
+
+* Add proper handling of empty next page in paginated result set.
+* PaginatedResults now accepts `next_key` option.
+
 ## 4.0.0
 
 * Rename `PaginatedAPIIterator` to `PaginatedResults`.
