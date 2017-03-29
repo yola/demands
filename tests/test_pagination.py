@@ -96,7 +96,7 @@ class ItemPaginationTestWithNestedResultsAndNextLink(TestCase):
 
         next = 'next_url' if offset < 4 * 10 else None
         return {'results': list(
-            range(offset, offset+kwargs['limit'])), 'next_page': next}
+            range(offset, offset + kwargs['limit'])), 'next_page': next}
 
     def test_iteration_stops_on_empty_next(self):
         self.assertEqual(list(self.psc), list(range(0, 50)))
