@@ -97,7 +97,7 @@ class PaginatedResults(object):
     def __iter__(self):
         for page_id in self._page_ids():
             page = self._get_page(page_id)
-            for item in page.data_items:
+            for item in page.items:
                 yield item
             if page.is_last_page:
                 return
@@ -127,7 +127,7 @@ class Page(object):
         self._options = options
 
     @property
-    def data_items(self):
+    def items(self):
         results_key = self._options.get(RESULTS_KEY)
         if results_key:
             return self._data[results_key]
@@ -135,7 +135,7 @@ class Page(object):
 
     @property
     def size(self):
-        return len(self.data_items)
+        return len(self.items)
 
     @property
     def is_last_page(self):
