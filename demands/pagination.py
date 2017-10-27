@@ -161,4 +161,4 @@ class PaginatedResults(object):
         if isinstance(key, slice):
             page_num = int(key.start / self.options['page_size']) + 1
             return self._get_page(page_num).items
-        return self.list[key]
+        return list(self)[key]
