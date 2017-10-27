@@ -8,11 +8,40 @@ PAGINATION_TYPE = 'pagination_type'
 RESULTS_KEY = 'results_key'
 NEXT_KEY = 'next_key'
 START = 'start'
+PAGE_CLASS = 'page_class'
 
 
 class PaginationType(object):
     ITEM = 'item'
     PAGE = 'page'
+
+
+class Page(object):
+    def __init__(self, data, options):
+        self._data = data
+        self._options = options
+
+    @property
+    def items(self):
+        results_key = self._options.get(RESULTS_KEY)
+        if results_key:
+            return self._data[results_key]
+
+        return self._data
+
+    @property
+    def size(self):
+        return len(self.items)
+
+    @property
+    def is_last_page(self):
+        next_key = self._options.get(NEXT_KEY)
+
+        next_page_is_null = (
+            next_key in self._data and
+            self._data[next_key] is None
+        )
+        return self.size < self._options[PAGE_SIZE] or next_page_is_null
 
 
 class PaginatedResults(object):
@@ -85,6 +114,7 @@ class PaginatedResults(object):
         PAGINATION_TYPE: PaginationType.PAGE,
         RESULTS_KEY: 'results',
         NEXT_KEY: 'next',
+        PAGE_CLASS: Page,
     }
 
     def __init__(self, paginated_fn, args=(), kwargs=None, **options):
@@ -93,6 +123,8 @@ class PaginatedResults(object):
         self.kwargs = kwargs or {}
         self.options = dict(self.DEFAULT_OPTIONS)
         self.options.update(options)
+        self._page_class = self.options['page_class']
+        self._count = None
 
     def __iter__(self):
         for page_id in self._page_ids():
@@ -109,7 +141,7 @@ class PaginatedResults(object):
             self.options[PAGE_SIZE_PARAM]: self.options[PAGE_SIZE],
         })
         one_page_data = self.paginated_fn(*self.args, **kwargs)
-        return Page(one_page_data, self.options)
+        return self._page_class(one_page_data, self.options)
 
     def _page_ids(self):
         if self.options[PAGINATION_TYPE] == PaginationType.PAGE:
@@ -120,29 +152,13 @@ class PaginatedResults(object):
             return count(start, self.options[PAGE_SIZE])
         raise ValueError('Unknown pagination_type')
 
+    def count(self):
+        if self._count is None:
+            self._count = self._get_page(1)._data['count']
+        return self._count
 
-class Page(object):
-    def __init__(self, data, options):
-        self._data = data
-        self._options = options
-
-    @property
-    def items(self):
-        results_key = self._options.get(RESULTS_KEY)
-        if results_key:
-            return self._data[results_key]
-        return self._data
-
-    @property
-    def size(self):
-        return len(self.items)
-
-    @property
-    def is_last_page(self):
-        next_key = self._options.get(NEXT_KEY)
-
-        next_page_is_null = (
-            next_key in self._data and
-            self._data[next_key] is None
-        )
-        return self.size < self._options[PAGE_SIZE] or next_page_is_null
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            page_num = int(key.start / self.options['page_size']) + 1
+            return self._get_page(page_num).items
+        return list(self)[key]
