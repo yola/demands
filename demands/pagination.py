@@ -85,7 +85,18 @@ class PaginatedResults(object):
         PAGINATION_TYPE: PaginationType.PAGE,
         RESULTS_KEY: 'results',
         NEXT_KEY: 'next',
+        'data_model_class': None,
+        'page_class': Page,
     }
+
+    def count(self):
+        return self._get_page(1)._data['count']
+
+    def __getitem__(self, key):
+        if isinstance(key, slice):
+            page_num = int(key.start / self.options['page_size']) + 1
+            return self._get_page(page_num).items
+        return self.list[key]
 
     def __init__(self, paginated_fn, args=(), kwargs=None, **options):
         self.paginated_fn = paginated_fn
@@ -93,6 +104,7 @@ class PaginatedResults(object):
         self.kwargs = kwargs or {}
         self.options = dict(self.DEFAULT_OPTIONS)
         self.options.update(options)
+        self._page_class = self.options['page_class']
 
     def __iter__(self):
         for page_id in self._page_ids():
@@ -109,7 +121,7 @@ class PaginatedResults(object):
             self.options[PAGE_SIZE_PARAM]: self.options[PAGE_SIZE],
         })
         one_page_data = self.paginated_fn(*self.args, **kwargs)
-        return Page(one_page_data, self.options)
+        return self._page_class(one_page_data, self.options)
 
     def _page_ids(self):
         if self.options[PAGINATION_TYPE] == PaginationType.PAGE:
@@ -125,13 +137,20 @@ class Page(object):
     def __init__(self, data, options):
         self._data = data
         self._options = options
+        self._data_model_class = self._options['data_model_class']
 
     @property
     def items(self):
         results_key = self._options.get(RESULTS_KEY)
         if results_key:
-            return self._data[results_key]
-        return self._data
+            raw_data = self._data[results_key]
+        else:
+            raw_data = self._data
+
+        if self._data_model_class is not None:
+            return [self._data_model_class(**d) for d in raw_data]
+
+        return raw_data
 
     @property
     def size(self):
@@ -146,3 +165,4 @@ class Page(object):
             self._data[next_key] is None
         )
         return self.size < self._options[PAGE_SIZE] or next_page_is_null
+
