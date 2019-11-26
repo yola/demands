@@ -1,18 +1,22 @@
 import copy
 import inspect
-import json
 import logging
 import time
 
 from requests import Session
-from six import iteritems, itervalues
-
+from six import PY2, iteritems, itervalues
 
 __doc__ = 'Base HTTP service client'
-__version__ = '4.1.0'
+__version__ = '4.2.0'
 __url__ = 'https://github.com/yola/demands'
 
 log = logging.getLogger(__name__)
+
+
+def get_args(fun):
+    if PY2:
+        return inspect.getargspec(fun)[0]
+    return tuple(p.name for p in inspect.signature(fun).parameters.values())
 
 
 class HTTPServiceError(AssertionError):
@@ -49,7 +53,7 @@ class HTTPServiceClient(Session):
     :param cookies: (optional) Dict only, CookieJar not supported
     """
 
-    _VALID_REQUEST_ARGS = inspect.getargspec(Session.request)[0]
+    _VALID_REQUEST_ARGS = get_args(Session.request)
 
     def __init__(self, url, **kwargs):
         super(HTTPServiceClient, self).__init__()
