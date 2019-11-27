@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
-## 4.2.0
+## 5.0.0
 
 * Remove deprecation warning on Python 3.
 * Add Python 3.5, 3.6, 3.7, 3.8 as supported.
