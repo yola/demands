@@ -2,9 +2,9 @@
 
 ## 5.0.0
 
-* Remove deprecation warning on Python 3.
+* Remove deprecation warning in Python 3.
 * Add Python 3.5, 3.6, 3.7, 3.8 as supported.
-* Remove Python 3.3, 3.4 as supported.
+* Stop supporting Python 3.3 and 3.4.
 
 ## 4.1.0
 
