@@ -3,15 +3,15 @@ sudo: false
 cache:
   directories:
   - $HOME/.cache/pip
-env:
-- TOXENV=py27
-- TOXENV=py33
-- TOXENV=py34
-- TOXENV=pypy
-install:
-- pip install tox
+python:
+  - "2.7"
+  - "3.5"
+  - "3.6"
+  - "3.7"
+  - "3.8"
+  - "pypy"
 script:
-- tox
+- nosetests --with-cover --cover-package=demands
 after_success:
 - coveralls
 notifications:

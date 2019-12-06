@@ -1,5 +1,11 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 5.0.0
+
+* Remove deprecation warning in Python 3.
+* Add Python 3.5, 3.6, 3.7, 3.8 as supported.
+* Stop supporting Python 3.3 and 3.4.
+
 ## 4.1.0
 
 * Add proper handling of empty next page in paginated result set.
