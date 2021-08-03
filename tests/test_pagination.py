@@ -94,9 +94,21 @@ class ItemPaginationTestWithNestedResultsAndNextLink(TestCase):
         if offset > 4 * 10:
             raise ValueError('No Data')
 
-        next = 'next_url' if offset < 4 * 10 else None
+        next_ = 'next_url' if offset < 4 * 10 else None
         return {'results': list(
-            range(offset, offset + kwargs['limit'])), 'next_page': next}
+            range(offset, offset + kwargs['limit'])), 'next_page': next_}
 
     def test_iteration_stops_on_empty_next(self):
         self.assertEqual(list(self.psc), list(range(0, 50)))
+
+
+class LengthPaginationTest(PaginationTestsMixin, TestCase):
+    def get(self, start, end, *args, **kwargs):
+        results = super().get(start, end, *args, **kwargs)
+        return {'results': results, 'total': '5'}
+
+    def setUp(self):
+        self.psc = PaginatedResults(self.get, total='total')
+
+    def test_returns_correct_length(self):
+        self.assertEqual(list(self.psc)[0].total(), 5)

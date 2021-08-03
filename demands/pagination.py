@@ -8,6 +8,7 @@ PAGINATION_TYPE = 'pagination_type'
 RESULTS_KEY = 'results_key'
 NEXT_KEY = 'next_key'
 START = 'start'
+TOTAL = 'total'
 
 
 class PaginationType(object):
@@ -136,6 +137,10 @@ class Page(object):
     @property
     def size(self):
         return len(self.items)
+
+    @property
+    def total(self):
+        return int(self._data[self._options[TOTAL]])
 
     @property
     def is_last_page(self):

@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 5.1.0
+
+* Add property to return total number of results for supported APIs.
+
 ## 5.0.0
 
 * Remove deprecation warning in Python 3.
