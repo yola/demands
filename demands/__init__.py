@@ -7,7 +7,7 @@ from requests import Session
 from six import PY2, iteritems, itervalues
 
 __doc__ = 'Base HTTP service client'
-__version__ = '5.1.0'
+__version__ = '5.1.0-antono.0'
 __url__ = 'https://github.com/yola/demands'
 
 log = logging.getLogger(__name__)
