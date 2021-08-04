@@ -104,6 +104,7 @@ class PaginatedResults(object):
                 return
 
     def __len__(self):
+        pass
         page_ids = self._page_ids()
         first_page_id = next(page_ids)
         page = self._get_page(first_page_id)
