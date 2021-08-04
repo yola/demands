@@ -103,6 +103,12 @@ class PaginatedResults(object):
             if page.is_last_page:
                 return
 
+    def __len__(self):
+        page_ids = self._page_ids()
+        first_page_id = next(page_ids)
+        page = self._get_page(first_page_id)
+        return page.total
+
     def _get_page(self, page):
         kwargs = dict(self.kwargs)
         kwargs.update({

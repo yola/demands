@@ -2,7 +2,7 @@
 
 ## 5.1.0
 
-* Add property to return total number of results for supported APIs.
+* Add property to return __len__ number of results for supported APIs.
 
 ## 5.0.0
 

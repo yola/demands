@@ -111,4 +111,4 @@ class LengthPaginationTest(PaginationTestsMixin, TestCase):
         self.psc = PaginatedResults(self.get, total='total')
 
     def test_returns_correct_length(self):
-        self.assertEqual(list(self.psc)[0].total(), 5)
+        self.assertEqual(len(self.psc), 5)
