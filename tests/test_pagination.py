@@ -107,10 +107,9 @@ class PagePaginationTestWithPageSizeGreaterThanTargetPage(TestCase):
         self.psc = PaginatedResults(self.get, page_size=100)
 
     def get(self, *args, **kwargs):
-        next_url = 'next_url' if kwargs['page'] < 5 else None
         return {
             'results': list(range(kwargs['page'], kwargs['page'] + 10)),
-            'next': next_url
+            'next': 'next_url' if kwargs['page'] < 5 else None
         }
 
     def test_iteration_stops_on_empty_next(self):
