@@ -2,7 +2,7 @@
 
 ## 5.0.0
 
-* Fix wrong behavior with page_size in `Page.is_last_page`
+* Fix wrong behavior `Page.is_last_page`
 
 ## 5.0.0
 
