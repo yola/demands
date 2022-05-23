@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
-## 5.0.0
+## 5.1.0
 
 * Fix wrong behavior `Page.is_last_page`
 * Remove `testtube`
