@@ -2,6 +2,10 @@
 
 ## 5.0.0
 
+* Fix wrong behavior with page_size in `Page.is_last_page`
+
+## 5.0.0
+
 * Remove deprecation warning in Python 3.
 * Add Python 3.5, 3.6, 3.7, 3.8 as supported.
 * Stop supporting Python 3.3 and 3.4.
