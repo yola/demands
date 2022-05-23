@@ -9,4 +9,3 @@ requests >= 2.4.2, < 3.0.0
 six>=1.9.0
 sphinx-bootstrap-theme < 1.0.0
 sphinxcontrib-httpdomain < 2.0.0
-testtube < 1.0.0
