@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/demands/releases)
 
+## 5.1.0
+
+* Fix wrong behavior of `Page.is_last_page`
+* Remove `testtube`
+
 ## 5.0.0
 
 * Remove deprecation warning in Python 3.
