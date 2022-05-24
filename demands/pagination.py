@@ -139,17 +139,7 @@ class Page(object):
 
     @property
     def is_last_page(self):
-        next_key = self._options.get(NEXT_KEY)
-        next_key_in_data = next_key in self._data
-
-        if (
-            self._options.get(PAGINATION_TYPE) == PaginationType.PAGE and
-            next_key_in_data
-        ):
+        if self._options.get(NEXT_KEY) in self._data:
             return self._data[self._options.get(NEXT_KEY)] is None
 
-        next_page_is_null = (
-            next_key_in_data and
-            self._data[next_key] is None
-        )
-        return self.size < self._options[PAGE_SIZE] or next_page_is_null
+        return self.size < self._options[PAGE_SIZE]
