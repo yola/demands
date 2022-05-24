@@ -139,7 +139,9 @@ class Page(object):
 
     @property
     def is_last_page(self):
-        if self._options.get(NEXT_KEY) in self._data:
-            return self._data[self._options.get(NEXT_KEY)] is None
+        next_key = self._options.get(NEXT_KEY)
+
+        if next_key in self._data:
+            return self._data[next_key] is None
 
         return self.size < self._options[PAGE_SIZE]
